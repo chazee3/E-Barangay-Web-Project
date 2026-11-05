@@ -1,0 +1,11 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Documents</title>
+<style>body{font-family:sans-serif;padding:15px} input,select,button{padding:8px;margin:4px} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px}</style>
+</head><body><a href="/">Home</a><h2>Document Request</h2>
+<form action="/documents/add" method="post">
+<select name="residentId" required><option value="">Select Resident</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
+<select name="docType"><option>Barangay Clearance</option><option>Indigency</option><option>Residency</option></select>
+<input name="purpose" placeholder="Purpose"><button>Issue</button>
+</form>
+<table><tr><th>ID</th><th>ResidentID</th><th>Type</th><th>Purpose</th><th>Date</th><th>QR</th></tr>
+<tr th:each="d:${docs}"><td th:text="${d.id}"></td><td th:text="${d.residentId}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td><td><a th:href="@{'/qr/DOC-'+${d.id}}">QR Verify</a></td></tr>
+</table></body></html>

@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>E-Barangay</title>
+<style>body{font-family:sans-serif;padding:20px;background:#f4f6f9} .card{background:white;padding:20px;border-radius:12px;margin:10px;box-shadow:0 2px 8px #0001;display:inline-block;width:180px;text-align:center} a{color:white;background:#2d6a4f;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin:5px}</style>
+</head><body>
+<h1>E-Barangay System - Web IS</h1>
+<div class="card"><h2 th:text="${residentCount}">0</h2><p>Residents</p></div>
+<div class="card"><h2 th:text="${docCount}">0</h2><p>Documents</p></div>
+<div class="card"><h2 th:text="${blotterCount}">0</h2><p>Blotters</p></div><br><br>
+<a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a>
+</body></html>

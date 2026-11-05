@@ -1,0 +1,9 @@
+com\barangay\Resident.class
+com\barangay\DocumentRepository.class
+com\barangay\MainController.class
+com\barangay\EBarangayApplication.class
+com\barangay\BlotterRepository.class
+com\barangay\QRUtil.class
+com\barangay\Document.class
+com\barangay\ResidentRepository.class
+com\barangay\Blotter.class
