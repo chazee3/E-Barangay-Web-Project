@@ -1,7 +1,7 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Blotter</title>
 <style>body{font-family:sans-serif;padding:15px;max-width:500px} label{display:block;margin-top:10px;font-weight:bold} input,select,textarea{padding:8px;width:100%;box-sizing:border-box;margin-top:4px} button{padding:10px 16px;margin-top:15px}</style>
 </head><body><a href="/blotter">Back</a><h2>Edit Blotter</h2>
-<p>Complainant: <b th:text="${complainant}"></b></p>
+<p>Case No.: <b th:text="${b.caseNo}"></b> | Complainant: <b th:text="${complainant}"></b></p>
 <form th:action="@{/blotter/update/{id}(id=${b.id})}" method="post">
 <label>Respondent</label><input name="respondentName" th:value="${b.respondentName}" required>
 <label>Incident type</label><select name="incidentType"><option th:selected="${b.incidentType == 'Away Kapitbahay'}">Away Kapitbahay</option><option th:selected="${b.incidentType == 'Ingay'}">Ingay</option><option th:selected="${b.incidentType == 'Utang'}">Utang</option><option th:selected="${b.incidentType == 'Others'}">Others</option></select>
@@ -9,6 +9,7 @@
 <label>Incident place</label><input name="incidentPlace" th:value="${b.incidentPlace}">
 <label>Witnesses</label><input name="witnesses" th:value="${b.witnesses}">
 <label>Details</label><textarea name="details" rows="4" th:text="${b.details}"></textarea>
+<label>Hearing date</label><input name="hearingDate" type="date" th:value="${b.hearingDate}">
 <label>Status</label><select name="status"><option th:selected="${b.status == 'Pending'}">Pending</option><option th:selected="${b.status == 'Settled'}">Settled</option><option th:selected="${b.status == 'Escalated'}">Escalated</option><option th:selected="${b.status == 'Dismissed'}">Dismissed</option></select>
 <label>Resolution notes</label><textarea name="resolution" rows="4" th:text="${b.resolution}"></textarea>
 <button type="submit">Save</button>
