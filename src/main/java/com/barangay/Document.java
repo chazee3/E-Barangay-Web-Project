@@ -1,5 +1,6 @@
 package com.barangay;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 @Entity
 public class Document {
   @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
@@ -13,4 +14,16 @@ public class Document {
   public String getValidUntil(){return validUntil;} public void setValidUntil(String v){this.validUntil=v;}
   public String getOrNumber(){return orNumber;} public void setOrNumber(String v){this.orNumber=v;}
   public String getAmountPaid(){return amountPaid;} public void setAmountPaid(String v){this.amountPaid=v;}
+  @Transient
+  public String getControlNo(){
+    String year = (dateIssued != null && dateIssued.length() >= 4) ? dateIssued.substring(0,4) : "----";
+    return "DOC-" + year + "-" + String.format("%04d", id == null ? 0L : id);
+  }
+  @Transient
+  public String getDisplayStatus(){
+    try{
+      if(validUntil != null && !validUntil.isBlank() && LocalDate.parse(validUntil).isBefore(LocalDate.now())) return "Expired";
+    }catch(Exception e){}
+    return status;
+  }
 }
