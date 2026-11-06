@@ -1,8 +1,9 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter Details</title>
-<style>body{font-family:sans-serif;padding:15px} table{width:100%;border-collapse:collapse;margin-top:10px} td{border:1px solid #ccc;padding:8px;vertical-align:top} td:first-child{font-weight:bold;width:180px} @media print{.bar{display:none}}</style>
-</head><body><div class="bar"><a href="/blotter">Back</a> | <a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a> | <button onclick="window.print()">Print</button></div>
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter Details</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<a href="/blotter">&larr; Back</a> | <a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a> | <a href="#" onclick="window.print();return false;">Print</a>
 <h2>Blotter Case <span th:text="${b.caseNo}"></span></h2>
-<table>
+<table class="info">
 <tr><td>Complainant</td><td th:text="${complainant}"></td></tr>
 <tr><td>Respondent</td><td th:text="${b.respondentName}"></td></tr>
 <tr><td>Incident type</td><td th:text="${b.incidentType}"></td></tr>
