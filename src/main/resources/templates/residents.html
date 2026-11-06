@@ -1,6 +1,7 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Residents</title>
 <style>body{font-family:sans-serif;padding:15px} input,select,button{padding:8px;margin:4px} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{margin:0} td form{margin:0;display:inline} td a{margin-right:6px}</style>
 </head><body><a href="/">Home</a><h2>Resident Profiling</h2>
+<p th:if="${param.error}" style="color:#b00020"><b>Can't delete:</b> this resident still has documents or blotters. Delete those first.</p>
 <form action="/residents/add" method="post">
 <input name="fullname" placeholder="Fullname" required><input name="purok" placeholder="Purok"><input name="contact" placeholder="Contact"><input name="birthdate" type="date">
 <input name="address" placeholder="Address">
