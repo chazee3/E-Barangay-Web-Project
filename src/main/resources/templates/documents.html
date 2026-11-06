@@ -1,16 +1,23 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Documents</title>
-<style>body{font-family:sans-serif;padding:15px} input,select,button{padding:8px;margin:4px} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{margin:0} td form{margin:0;display:inline} td a{margin-right:6px}</style>
+<style>body{font-family:sans-serif;padding:15px} input,select,button{padding:8px;margin:4px} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{margin:0} td form{margin:0;display:inline} td a{margin-right:6px} .badge{padding:2px 8px;border-radius:10px;font-size:13px} .Issued{background:#cfe8ff} .Released{background:#c8f0d0} .Expired{background:#f7c6c6}</style>
 </head><body><a href="/">Home</a><h2>Document Request</h2>
 <form action="/documents/add" method="post">
 <select name="residentId" required><option value="">Select Resident</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
-<select name="docType"><option>Barangay Clearance</option><option>Indigency</option><option>Residency</option></select>
+<select name="docType"><option>Barangay Clearance</option><option>Indigency</option><option>Residency</option><option>Good Moral</option><option>Business Clearance</option></select>
 <input name="purpose" placeholder="Purpose">
 <input name="orNumber" placeholder="OR Number"><input name="amountPaid" placeholder="Amount Paid">
 <label>Valid until <input name="validUntil" type="date"></label>
 <button>Issue</button>
 </form>
-<table><tr><th>ID</th><th>ResidentID</th><th>Type</th><th>Purpose</th><th>Date</th><th>Status</th><th>QR</th><th>Action</th></tr>
-<tr th:each="d:${docs}"><td th:text="${d.id}"></td><td th:text="${d.residentId}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td><td th:text="${d.status}"></td><td><a th:href="@{'/qr/DOC-'+${d.id}}">QR Verify</a></td>
-<td><a th:href="@{/documents/edit/{id}(id=${d.id})}">Edit</a>
+<form action="/documents" method="get">
+<input name="q" th:value="${q}" placeholder="Search name, purpose, OR no., control no.">
+<select name="type"><option value="">All types</option><option th:selected="${type == 'Barangay Clearance'}">Barangay Clearance</option><option th:selected="${type == 'Indigency'}">Indigency</option><option th:selected="${type == 'Residency'}">Residency</option><option th:selected="${type == 'Good Moral'}">Good Moral</option><option th:selected="${type == 'Business Clearance'}">Business Clearance</option></select>
+<select name="status"><option value="">All status</option><option th:selected="${status == 'Issued'}">Issued</option><option th:selected="${status == 'Released'}">Released</option><option th:selected="${status == 'Expired'}">Expired</option></select>
+<button>Search</button> <a href="/documents">Clear</a>
+</form>
+<table><tr><th>Control No.</th><th>Resident</th><th>Type</th><th>Purpose</th><th>Issued</th><th>Valid until</th><th>Status</th><th>Action</th></tr>
+<tr th:each="d:${docs}"><td th:text="${d.controlNo}"></td><td th:text="${names[d.residentId] ?: 'Unknown'}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td><td th:text="${d.validUntil}"></td>
+<td><span th:text="${d.displayStatus}" th:class="'badge ' + ${d.displayStatus}"></span></td>
+<td><a th:href="@{/documents/view/{id}(id=${d.id})}">View/Print</a><a th:href="@{/documents/edit/{id}(id=${d.id})}">Edit</a>
 <form th:action="@{/documents/delete/{id}(id=${d.id})}" method="post" onsubmit="return confirm('Delete this document?');"><button type="submit">Delete</button></form></td></tr>
 </table></body></html>
