@@ -1,13 +1,17 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter</title>
-<style>body{font-family:sans-serif;padding:15px} input,select,button,textarea{padding:8px;margin:4px;width:95%} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{width:auto;margin:0} td form{margin:0}</style>
+<style>body{font-family:sans-serif;padding:15px} input,select,button,textarea{padding:8px;margin:4px;width:95%} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{width:auto;margin:0} td form{margin:0;display:inline} td a{margin-right:6px}</style>
 </head><body><a href="/">Home</a><h2>Blotter Log</h2>
 <form action="/blotter/add" method="post">
 <select name="complainantId" required><option value="">Complainant</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
 <input name="respondentName" placeholder="Respondent" required>
 <select name="incidentType"><option>Away Kapitbahay</option><option>Ingay</option><option>Utang</option><option>Others</option></select>
+<label>Incident date <input name="incidentDate" type="date"></label>
+<input name="incidentPlace" placeholder="Incident place">
+<input name="witnesses" placeholder="Witnesses">
 <textarea name="details" placeholder="Details"></textarea><button>File Blotter</button>
 </form>
-<table><tr><th>ID</th><th>ComplainantID</th><th>Respondent</th><th>Type</th><th>Date</th><th>Action</th></tr>
-<tr th:each="b:${blotters}"><td th:text="${b.id}"></td><td th:text="${b.complainantId}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td>
-<td><form th:action="@{/blotter/delete/{id}(id=${b.id})}" method="post" onsubmit="return confirm('Delete this blotter?');"><button type="submit">Delete</button></form></td></tr>
+<table><tr><th>ID</th><th>ComplainantID</th><th>Respondent</th><th>Type</th><th>Date Filed</th><th>Status</th><th>Action</th></tr>
+<tr th:each="b:${blotters}"><td th:text="${b.id}"></td><td th:text="${b.complainantId}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td><td th:text="${b.status}"></td>
+<td><a th:href="@{/blotter/view/{id}(id=${b.id})}">View</a><a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a>
+<form th:action="@{/blotter/delete/{id}(id=${b.id})}" method="post" onsubmit="return confirm('Delete this blotter?');"><button type="submit">Delete</button></form></td></tr>
 </table></body></html>
