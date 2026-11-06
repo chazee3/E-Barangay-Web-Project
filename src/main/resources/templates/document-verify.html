@@ -1,0 +1,9 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Verify Document</title>
+<style>body{font-family:sans-serif;padding:20px;max-width:480px;margin:auto} .box{padding:20px;border-radius:12px} .ok{background:#d8f3dc} .bad{background:#f7c6c6} td{padding:4px 8px}</style>
+</head><body>
+<div th:if="${d == null}" class="box bad"><h2>Document not found</h2><p>This code does not match any record. The document may be fake.</p></div>
+<div th:if="${d != null and valid}" class="box ok"><h2>VALID DOCUMENT</h2>
+<table><tr><td>Control No.</td><td th:text="${d.controlNo}"></td></tr><tr><td>Issued to</td><td th:text="${holder}"></td></tr><tr><td>Type</td><td th:text="${d.docType}"></td></tr><tr><td>Date issued</td><td th:text="${d.dateIssued}"></td></tr><tr><td>Valid until</td><td th:text="${d.validUntil}"></td></tr></table></div>
+<div th:if="${d != null and !valid}" class="box bad"><h2>EXPIRED</h2>
+<table><tr><td>Control No.</td><td th:text="${d.controlNo}"></td></tr><tr><td>Issued to</td><td th:text="${holder}"></td></tr><tr><td>Type</td><td th:text="${d.docType}"></td></tr><tr><td>Valid until</td><td th:text="${d.validUntil}"></td></tr></table></div>
+</body></html>
