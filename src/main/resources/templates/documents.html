@@ -1,8 +1,8 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Documents</title>
 <link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
 <h2>Document Request</h2>
-<form action="/documents/add" method="post" class="grid">
+<form th:action="@{/documents/add}" method="post" class="grid">
 <select name="residentId" required><option value="">Select Resident</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
 <select name="docType"><option>Barangay Clearance</option><option>Indigency</option><option>Residency</option><option>Good Moral</option><option>Business Clearance</option></select>
 <input name="purpose" placeholder="Purpose">
