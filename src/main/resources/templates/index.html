@@ -1,9 +1,12 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>E-Barangay</title>
-<style>body{font-family:sans-serif;padding:20px;background:#f4f6f9} .card{background:white;padding:20px;border-radius:12px;margin:10px;box-shadow:0 2px 8px #0001;display:inline-block;width:180px;text-align:center} a{color:white;background:#2d6a4f;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin:5px}</style>
-</head><body>
-<h1>E-Barangay System - Web IS</h1>
-<div class="card"><h2 th:text="${residentCount}">0</h2><p>Residents</p></div>
-<div class="card"><h2 th:text="${docCount}">0</h2><p>Documents</p></div>
-<div class="card"><h2 th:text="${blotterCount}">0</h2><p>Blotters</p></div><br><br>
-<a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a>
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>E-Barangay</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<div class="hero"><h1>E-Barangay System</h1><p>Resident profiling, document issuance, and blotter records in one place.</p></div>
+<div class="stats">
+<a class="stat" href="/residents"><span class="num" th:text="${residentCount}">0</span><span class="label">Residents</span></a>
+<a class="stat" href="/documents"><span class="num" th:text="${docCount}">0</span><span class="label">Documents</span></a>
+<a class="stat" href="/blotter"><span class="num" th:text="${blotterCount}">0</span><span class="label">Blotters</span></a>
+</div>
+<h2>Quick actions</h2>
+<div class="actions"><a class="btn" href="/residents">Manage Residents</a><a class="btn" href="/documents">Issue a Document</a><a class="btn" href="/blotter">File a Blotter</a></div>
 </body></html>
