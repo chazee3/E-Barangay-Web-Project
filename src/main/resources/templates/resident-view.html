@@ -1,6 +1,7 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Resident Profile</title>
-<style>body{font-family:sans-serif;padding:15px} table{width:100%;border-collapse:collapse;margin-top:10px} th,td{border:1px solid #ccc;padding:8px;text-align:left} .info td:first-child{font-weight:bold;width:180px}</style>
-</head><body><a href="/residents">Back</a> | <a th:href="@{/residents/edit/{id}(id=${r.id})}">Edit</a>
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Resident Profile</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<a href="/residents">&larr; Back</a> | <a th:href="@{/residents/edit/{id}(id=${r.id})}">Edit</a>
 <h2 th:text="${r.fullname}"></h2>
 <table class="info">
 <tr><td>ID</td><td th:text="${r.id}"></td></tr>
@@ -18,9 +19,9 @@
 <tr><td>Occupation</td><td th:text="${r.occupation}"></td></tr>
 </table>
 <h3>Documents</h3>
-<table><tr><th>ID</th><th>Type</th><th>Purpose</th><th>Date</th></tr>
-<tr th:each="d : ${docs}"><td th:text="${d.id}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td></tr></table>
+<div class="wrap"><table><tr><th>ID</th><th>Type</th><th>Purpose</th><th>Date</th></tr>
+<tr th:each="d : ${docs}"><td th:text="${d.id}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td></tr></table></div>
 <h3>Blotter records (as complainant)</h3>
-<table><tr><th>ID</th><th>Respondent</th><th>Type</th><th>Date</th></tr>
-<tr th:each="b : ${blotters}"><td th:text="${b.id}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td></tr></table>
+<div class="wrap"><table><tr><th>ID</th><th>Respondent</th><th>Type</th><th>Date</th></tr>
+<tr th:each="b : ${blotters}"><td th:text="${b.id}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td></tr></table></div>
 </body></html>
