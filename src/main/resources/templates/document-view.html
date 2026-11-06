@@ -1,0 +1,17 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Certificate</title>
+<style>body{font-family:Georgia,serif;padding:20px} .bar{font-family:sans-serif;margin-bottom:15px} .cert{max-width:700px;margin:auto;border:3px double #2d6a4f;padding:40px} .cert h1{text-align:center;color:#1b4332;margin:0} .cert h2{text-align:center;margin:6px 0 24px;text-transform:uppercase;letter-spacing:1px} .cert p{line-height:1.8;text-align:justify} .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;font-size:14px} .sig{text-align:center;border-top:1px solid #000;padding-top:4px;min-width:200px} @media print{.bar{display:none} body{padding:0}}</style>
+</head><body>
+<div class="bar"><a href="/documents">Back</a> | <button onclick="window.print()">Print</button></div>
+<div class="cert">
+<h1>BARANGAY CERTIFICATION</h1>
+<h2 th:text="${d.docType}"></h2>
+<p>TO WHOM IT MAY CONCERN:</p>
+<p>This is to certify that <b th:text="${resident != null ? resident.fullname : 'Unknown'}"></b><span th:if="${resident != null and resident.age != null}">, <span th:text="${resident.age}"></span> years old</span>, is a resident of <span th:text="${resident != null and resident.address != null and resident.address != '' ? resident.address : 'this barangay'}"></span><span th:if="${resident != null and resident.purok != null and resident.purok != ''}">, Purok <span th:text="${resident.purok}"></span></span>.</p>
+<p>This certification is issued upon request for <b th:text="${d.purpose != null and d.purpose != '' ? d.purpose : 'whatever legal purpose it may serve'}"></b>.</p>
+<p>Issued on <span th:text="${d.dateIssued}"></span><span th:if="${d.validUntil != null and d.validUntil != ''}">, valid until <span th:text="${d.validUntil}"></span></span>.</p>
+<div class="foot">
+<div><img th:src="@{/qr/doc/{id}(id=${d.id})}" width="110" height="110" alt="QR"><br>Control No.: <span th:text="${d.controlNo}"></span><br>OR No.: <span th:text="${d.orNumber}"></span></div>
+<div class="sig">Barangay Captain</div>
+</div>
+</div>
+</body></html>
