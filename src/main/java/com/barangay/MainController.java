@@ -3,14 +3,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class MainController {
   @Autowired ResidentRepository residentRepo;
   @Autowired DocumentRepository docRepo;
   @Autowired BlotterRepository blotterRepo;
+
+  private boolean has(String v, String s){ return v != null && v.toLowerCase().contains(s); }
+  private Map<Long,String> nameMap(){
+    Map<Long,String> map = new HashMap<>();
+    for(Resident r : residentRepo.findAll()){ map.put(r.getId(), r.getFullname() == null ? "" : r.getFullname()); }
+    return map;
+  }
 
   @GetMapping("/") public String index(Model m){
     m.addAttribute("residentCount", residentRepo.count());
@@ -20,8 +28,6 @@ public class MainController {
   }
 
   // ---------- RESIDENTS ----------
-  private boolean has(String v, String s){ return v != null && v.toLowerCase().contains(s); }
-
   @GetMapping("/residents") public String residents(@RequestParam(required=false) String q, @RequestParam(required=false) String category, Model m){
     List<Resident> list = residentRepo.findAll();
     if(q != null && !q.isBlank()){
@@ -79,17 +85,47 @@ public class MainController {
   }
 
   @PostMapping("/residents/delete/{id}") public String deleteResident(@PathVariable Long id){
+    boolean hasDocs = docRepo.findAll().stream().anyMatch(d -> id.equals(d.getResidentId()));
+    boolean hasBlotters = blotterRepo.findAll().stream().anyMatch(b -> id.equals(b.getComplainantId()));
+    if(hasDocs || hasBlotters) return "redirect:/residents?error=1";
     residentRepo.deleteById(id); return "redirect:/residents";
   }
 
   // ---------- DOCUMENTS ----------
-  @GetMapping("/documents") public String documents(Model m){ m.addAttribute("docs", docRepo.findAll()); m.addAttribute("residents", residentRepo.findAll()); return "documents"; }
+  @GetMapping("/documents") public String documents(@RequestParam(required=false) String q, @RequestParam(required=false) String type, @RequestParam(required=false) String status, Model m){
+    Map<Long,String> names = nameMap();
+    List<Document> list = docRepo.findAll();
+    if(q != null && !q.isBlank()){
+      String s = q.toLowerCase().trim();
+      list = list.stream().filter(d -> has(names.get(d.getResidentId()), s) || has(d.getPurpose(), s) || has(d.getOrNumber(), s) || has(d.getControlNo(), s)).toList();
+    }
+    if(type != null && !type.isBlank()){
+      list = list.stream().filter(d -> type.equals(d.getDocType())).toList();
+    }
+    if(status != null && !status.isBlank()){
+      list = list.stream().filter(d -> status.equals(d.getDisplayStatus())).toList();
+    }
+    list = list.stream().sorted(Comparator.comparing(Document::getId).reversed()).toList();
+    m.addAttribute("docs", list);
+    m.addAttribute("residents", residentRepo.findAll());
+    m.addAttribute("names", names);
+    m.addAttribute("q", q); m.addAttribute("type", type); m.addAttribute("status", status);
+    return "documents";
+  }
 
   @PostMapping("/documents/add") public String addDoc(@RequestParam Long residentId, @RequestParam String docType, @RequestParam(required=false) String purpose,
       @RequestParam(required=false) String validUntil, @RequestParam(required=false) String orNumber, @RequestParam(required=false) String amountPaid){
     Document d = new Document(); d.setResidentId(residentId); d.setDocType(docType); d.setPurpose(purpose);
     d.setValidUntil(validUntil); d.setOrNumber(orNumber); d.setAmountPaid(amountPaid);
     d.setDateIssued(LocalDate.now().toString()); d.setStatus("Issued"); docRepo.save(d); return "redirect:/documents";
+  }
+
+  @GetMapping("/documents/view/{id}") public String viewDoc(@PathVariable Long id, Model m){
+    Document d = docRepo.findById(id).orElse(null);
+    if(d == null) return "redirect:/documents";
+    m.addAttribute("d", d);
+    m.addAttribute("resident", residentRepo.findById(d.getResidentId()).orElse(null));
+    return "document-view";
   }
 
   @GetMapping("/documents/edit/{id}") public String editDoc(@PathVariable Long id, Model m){
@@ -115,8 +151,38 @@ public class MainController {
     docRepo.deleteById(id); return "redirect:/documents";
   }
 
+  // Public verification page (opened by scanning the QR on a certificate)
+  @GetMapping("/verify/{id}") public String verifyDoc(@PathVariable Long id, Model m){
+    Document d = docRepo.findById(id).orElse(null);
+    m.addAttribute("d", d);
+    if(d != null){
+      m.addAttribute("holder", residentRepo.findById(d.getResidentId()).map(Resident::getFullname).orElse("Unknown"));
+      m.addAttribute("valid", !"Expired".equals(d.getDisplayStatus()));
+    }
+    return "document-verify";
+  }
+
   // ---------- BLOTTER ----------
-  @GetMapping("/blotter") public String blotter(Model m){ m.addAttribute("blotters", blotterRepo.findAll()); m.addAttribute("residents", residentRepo.findAll()); return "blotter"; }
+  @GetMapping("/blotter") public String blotter(@RequestParam(required=false) String q, @RequestParam(required=false) String type, @RequestParam(required=false) String status, Model m){
+    Map<Long,String> names = nameMap();
+    List<Blotter> list = blotterRepo.findAll();
+    if(q != null && !q.isBlank()){
+      String s = q.toLowerCase().trim();
+      list = list.stream().filter(b -> has(names.get(b.getComplainantId()), s) || has(b.getRespondentName(), s) || has(b.getIncidentPlace(), s) || has(b.getCaseNo(), s)).toList();
+    }
+    if(type != null && !type.isBlank()){
+      list = list.stream().filter(b -> type.equals(b.getIncidentType())).toList();
+    }
+    if(status != null && !status.isBlank()){
+      list = list.stream().filter(b -> status.equals(b.getStatus())).toList();
+    }
+    list = list.stream().sorted(Comparator.comparing(Blotter::getId).reversed()).toList();
+    m.addAttribute("blotters", list);
+    m.addAttribute("residents", residentRepo.findAll());
+    m.addAttribute("names", names);
+    m.addAttribute("q", q); m.addAttribute("type", type); m.addAttribute("status", status);
+    return "blotter";
+  }
 
   @PostMapping("/blotter/add") public String addBlotter(@RequestParam Long complainantId, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam(required=false) String details,
       @RequestParam(required=false) String incidentDate, @RequestParam(required=false) String incidentPlace, @RequestParam(required=false) String witnesses){
@@ -143,12 +209,12 @@ public class MainController {
 
   @PostMapping("/blotter/update/{id}") public String updateBlotter(@PathVariable Long id, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam(required=false) String details,
       @RequestParam(required=false) String incidentDate, @RequestParam(required=false) String incidentPlace, @RequestParam(required=false) String witnesses,
-      @RequestParam(required=false) String resolution, @RequestParam(required=false) String status){
+      @RequestParam(required=false) String resolution, @RequestParam(required=false) String status, @RequestParam(required=false) String hearingDate){
     Blotter b = blotterRepo.findById(id).orElse(null);
     if(b != null){
       b.setRespondentName(respondentName); b.setIncidentType(incidentType); b.setDetails(details);
       b.setIncidentDate(incidentDate); b.setIncidentPlace(incidentPlace); b.setWitnesses(witnesses);
-      b.setResolution(resolution); b.setStatus(status);
+      b.setResolution(resolution); b.setStatus(status); b.setHearingDate(hearingDate);
       blotterRepo.save(b);
     }
     return "redirect:/blotter";
@@ -161,4 +227,10 @@ public class MainController {
   // ---------- QR ----------
   @GetMapping(value="/qr/{text}", produces="image/png") @ResponseBody
   public byte[] qr(@PathVariable String text) throws Exception { return QRUtil.generate(text); }
+
+  @GetMapping(value="/qr/doc/{id}", produces="image/png") @ResponseBody
+  public byte[] docQr(@PathVariable Long id) throws Exception {
+    String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/verify/" + id).toUriString();
+    return QRUtil.generate(url);
+  }
 }
