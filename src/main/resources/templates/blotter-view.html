@@ -1,7 +1,7 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter Details</title>
-<style>body{font-family:sans-serif;padding:15px} table{width:100%;border-collapse:collapse;margin-top:10px} td{border:1px solid #ccc;padding:8px;vertical-align:top} td:first-child{font-weight:bold;width:180px}</style>
-</head><body><a href="/blotter">Back</a> | <a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a>
-<h2>Blotter Case #<span th:text="${b.id}"></span></h2>
+<style>body{font-family:sans-serif;padding:15px} table{width:100%;border-collapse:collapse;margin-top:10px} td{border:1px solid #ccc;padding:8px;vertical-align:top} td:first-child{font-weight:bold;width:180px} @media print{.bar{display:none}}</style>
+</head><body><div class="bar"><a href="/blotter">Back</a> | <a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a> | <button onclick="window.print()">Print</button></div>
+<h2>Blotter Case <span th:text="${b.caseNo}"></span></h2>
 <table>
 <tr><td>Complainant</td><td th:text="${complainant}"></td></tr>
 <tr><td>Respondent</td><td th:text="${b.respondentName}"></td></tr>
@@ -10,6 +10,7 @@
 <tr><td>Incident place</td><td th:text="${b.incidentPlace}"></td></tr>
 <tr><td>Witnesses</td><td th:text="${b.witnesses}"></td></tr>
 <tr><td>Date filed</td><td th:text="${b.dateFiled}"></td></tr>
+<tr><td>Hearing date</td><td th:text="${b.hearingDate}"></td></tr>
 <tr><td>Status</td><td th:text="${b.status}"></td></tr>
 <tr><td>Details</td><td th:text="${b.details}"></td></tr>
 <tr><td>Resolution notes</td><td th:text="${b.resolution}"></td></tr>
