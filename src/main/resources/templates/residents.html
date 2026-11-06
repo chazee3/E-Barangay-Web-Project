@@ -1,9 +1,9 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Residents</title>
 <link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
 <h2>Resident Profiling</h2>
 <p class="alert" th:if="${param.error}"><b>Can't delete:</b> this resident still has documents or blotters. Delete those first.</p>
-<form action="/residents/add" method="post" class="grid">
+<form th:action="@{/residents/add}" method="post" class="grid">
 <input name="fullname" placeholder="Fullname" required><input name="purok" placeholder="Purok"><input name="contact" placeholder="Contact"><input name="birthdate" type="date">
 <input name="address" placeholder="Address">
 <select name="sex"><option value="">Sex</option><option>Male</option><option>Female</option></select>
