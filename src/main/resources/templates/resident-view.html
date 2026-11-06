@@ -4,6 +4,11 @@
 <h2 th:text="${r.fullname}"></h2>
 <table class="info">
 <tr><td>ID</td><td th:text="${r.id}"></td></tr>
+<tr><td>Status</td><td th:text="${r.status}"></td></tr>
+<tr><td>Category</td><td th:text="${r.category}"></td></tr>
+<tr><td>Disability type</td><td th:text="${r.disabilityType}"></td></tr>
+<tr><td>PWD ID number</td><td th:text="${r.pwdIdNumber}"></td></tr>
+<tr><td>Age</td><td><span th:text="${r.age}"></span><b th:if="${r.age != null and r.age >= 60}"> (Senior)</b></td></tr>
 <tr><td>Purok</td><td th:text="${r.purok}"></td></tr>
 <tr><td>Address</td><td th:text="${r.address}"></td></tr>
 <tr><td>Contact</td><td th:text="${r.contact}"></td></tr>
