@@ -31,4 +31,15 @@ public class MainController {
   }
   @GetMapping(value="/qr/{text}", produces="image/png") @ResponseBody
   public byte[] qr(@PathVariable String text) throws Exception { return QRUtil.generate(text); }
+
+  // ---------- DELETE ----------
+  @PostMapping("/residents/delete/{id}") public String deleteResident(@PathVariable Long id){
+    residentRepo.deleteById(id); return "redirect:/residents";
+  }
+  @PostMapping("/documents/delete/{id}") public String deleteDoc(@PathVariable Long id){
+    docRepo.deleteById(id); return "redirect:/documents";
+  }
+  @PostMapping("/blotter/delete/{id}") public String deleteBlotter(@PathVariable Long id){
+    blotterRepo.deleteById(id); return "redirect:/blotter";
+  }
 }
