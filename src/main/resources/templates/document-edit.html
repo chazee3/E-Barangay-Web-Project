@@ -1,9 +1,9 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Document</title>
 <style>body{font-family:sans-serif;padding:15px;max-width:500px} label{display:block;margin-top:10px;font-weight:bold} input,select{padding:8px;width:100%;box-sizing:border-box;margin-top:4px} button{padding:10px 16px;margin-top:15px}</style>
 </head><body><a href="/documents">Back</a><h2>Edit Document</h2>
-<p>Resident: <b th:text="${residentName}"></b></p>
+<p>Resident: <b th:text="${residentName}"></b> | Control No.: <b th:text="${d.controlNo}"></b></p>
 <form th:action="@{/documents/update/{id}(id=${d.id})}" method="post">
-<label>Document type</label><select name="docType"><option th:selected="${d.docType == 'Barangay Clearance'}">Barangay Clearance</option><option th:selected="${d.docType == 'Indigency'}">Indigency</option><option th:selected="${d.docType == 'Residency'}">Residency</option></select>
+<label>Document type</label><select name="docType"><option th:selected="${d.docType == 'Barangay Clearance'}">Barangay Clearance</option><option th:selected="${d.docType == 'Indigency'}">Indigency</option><option th:selected="${d.docType == 'Residency'}">Residency</option><option th:selected="${d.docType == 'Good Moral'}">Good Moral</option><option th:selected="${d.docType == 'Business Clearance'}">Business Clearance</option></select>
 <label>Purpose</label><input name="purpose" th:value="${d.purpose}">
 <label>Status</label><select name="status"><option th:selected="${d.status == 'Issued'}">Issued</option><option th:selected="${d.status == 'Released'}">Released</option><option th:selected="${d.status == 'Expired'}">Expired</option></select>
 <label>Valid until</label><input name="validUntil" type="date" th:value="${d.validUntil}">
