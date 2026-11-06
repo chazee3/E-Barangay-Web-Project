@@ -1,11 +1,12 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Resident</title>
-<style>body{font-family:sans-serif;padding:15px;max-width:500px} label{display:block;margin-top:10px;font-weight:bold} input,select{padding:8px;width:100%;box-sizing:border-box;margin-top:4px} button{padding:10px 16px;margin-top:15px}</style>
-</head><body><a href="/residents">Back</a><h2>Edit Resident</h2>
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Resident</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<a href="/residents">&larr; Back</a><h2>Edit Resident</h2>
 <form th:action="@{/residents/update/{id}(id=${r.id})}" method="post">
 <label>Full name</label><input name="fullname" th:value="${r.fullname}" required>
 <label>Purok</label><input name="purok" th:value="${r.purok}">
 <label>Contact</label><input name="contact" th:value="${r.contact}">
-<label>Birthdate</label><input name="birthdate" type="date" th:value="${r.birthdate}">
+<label>Birthdate</label><input name="birthdate" type="date" min="1900-01-01" max="2100-12-31" th:value="${r.birthdate}">
 <label>Address</label><input name="address" th:value="${r.address}">
 <label>Sex</label><select name="sex"><option value="">-</option><option th:selected="${r.sex == 'Male'}">Male</option><option th:selected="${r.sex == 'Female'}">Female</option></select>
 <label>Civil status</label><select name="civilStatus"><option value="">-</option><option th:selected="${r.civilStatus == 'Single'}">Single</option><option th:selected="${r.civilStatus == 'Married'}">Married</option><option th:selected="${r.civilStatus == 'Widowed'}">Widowed</option><option th:selected="${r.civilStatus == 'Separated'}">Separated</option></select>
