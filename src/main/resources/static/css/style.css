@@ -17,7 +17,7 @@ a{color:var(--green)}
 .hero h1{color:#fff;margin:0 0 6px;font-size:30px}
 .hero p{margin:0;color:var(--green-light)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:28px}
-.stat{background:#fff;border-radius:14px;padding:24px;text-align:center;text-decoration:none;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:5px solid var(--green);transition:transform .15s}
+.stat{background:#fff;border-radius:14px;padding:24px;text-align:center;text-decoration:none;color:var(--text);box-shadow:0 2px 10px rgba(0,0,0,.06);border-top:5px solid var(--green)}
 .stat:hover{transform:translateY(-3px)}
 .stat .num{display:block;font-size:44px;font-weight:700;color:var(--green-dark)}
 .stat .label{color:var(--muted);font-size:16px}
@@ -62,3 +62,30 @@ td button:hover{background:#962d22}
 .Pending{background:#ffe9a8}.Settled{background:#c8f0d0}.Escalated{background:#f7c6c6}.Dismissed{background:#ddd}
 
 @media print{.topbar,.bar{display:none}}
+
+/* ---------- TRANSITIONS ---------- */
+
+/* Smooth page-to-page navigation (Chrome, Edge, Opera). The top bar stays still. */
+@view-transition{navigation:auto}
+.topbar{view-transition-name:topbar}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.25s}
+
+/* Content fades and slides in on every page load (works in all browsers) */
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.topbar ~ *{animation:pageIn .4s ease both}
+
+/* Dashboard cards pop in one after another */
+.stats .stat:nth-child(2){animation-delay:.08s}
+.stats .stat:nth-child(3){animation-delay:.16s}
+.stats{animation:none}
+.stat{animation:pageIn .45s ease both}
+
+/* Smooth hovers */
+a,button,.btn,td a,tr td,.badge,input,select,textarea,.stat{transition:background .2s,color .2s,transform .15s,box-shadow .2s,border-color .2s}
+button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 4px 10px rgba(0,0,0,.15)}
+button:active,.btn:active{transform:translateY(0)}
+.stat:hover{box-shadow:0 8px 20px rgba(0,0,0,.12)}
+
+/* Respect people who turn animations off, and don't animate printing */
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+@media print{*{animation:none!important;transition:none!important}}
