@@ -1,24 +1,27 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter</title>
-<style>body{font-family:sans-serif;padding:15px} input,select,button,textarea{padding:8px;margin:4px;width:95%} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{width:auto;margin:0} td form{margin:0;display:inline} td a{margin-right:6px} .badge{padding:2px 8px;border-radius:10px;font-size:13px} .Pending{background:#ffe9a8} .Settled{background:#c8f0d0} .Escalated{background:#f7c6c6} .Dismissed{background:#ddd} .filters input,.filters select,.filters button{width:auto}</style>
-</head><body><a href="/">Home</a><h2>Blotter Log</h2>
-<form action="/blotter/add" method="post">
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<h2>Blotter Log</h2>
+<form action="/blotter/add" method="post" class="grid">
 <select name="complainantId" required><option value="">Complainant</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
 <input name="respondentName" placeholder="Respondent" required>
 <select name="incidentType"><option>Away Kapitbahay</option><option>Ingay</option><option>Utang</option><option>Others</option></select>
-<label>Incident date <input name="incidentDate" type="date"></label>
+<label>Incident date <input name="incidentDate" type="date" min="2020-01-01" max="2100-12-31"></label>
 <input name="incidentPlace" placeholder="Incident place">
 <input name="witnesses" placeholder="Witnesses">
-<textarea name="details" placeholder="Details"></textarea><button>File Blotter</button>
+<textarea name="details" placeholder="Details" rows="3"></textarea>
+<button>File Blotter</button>
 </form>
-<form action="/blotter" method="get" class="filters">
+<form action="/blotter" method="get" class="bar">
 <input name="q" th:value="${q}" placeholder="Search name, respondent, place, case no.">
 <select name="type"><option value="">All types</option><option th:selected="${type == 'Away Kapitbahay'}">Away Kapitbahay</option><option th:selected="${type == 'Ingay'}">Ingay</option><option th:selected="${type == 'Utang'}">Utang</option><option th:selected="${type == 'Others'}">Others</option></select>
 <select name="status"><option value="">All status</option><option th:selected="${status == 'Pending'}">Pending</option><option th:selected="${status == 'Settled'}">Settled</option><option th:selected="${status == 'Escalated'}">Escalated</option><option th:selected="${status == 'Dismissed'}">Dismissed</option></select>
 <button>Search</button> <a href="/blotter">Clear</a>
 </form>
-<table><tr><th>Case No.</th><th>Complainant</th><th>Respondent</th><th>Type</th><th>Filed</th><th>Hearing</th><th>Status</th><th>Action</th></tr>
+<p class="muted" th:text="${#lists.size(blotters)} + ' case(s)'"></p>
+<div class="wrap"><table><tr><th>Case No.</th><th>Complainant</th><th>Respondent</th><th>Type</th><th>Filed</th><th>Hearing</th><th>Status</th><th>Action</th></tr>
 <tr th:each="b:${blotters}"><td th:text="${b.caseNo}"></td><td th:text="${names[b.complainantId] ?: 'Unknown'}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td><td th:text="${b.hearingDate}"></td>
 <td><span th:text="${b.status}" th:class="'badge ' + ${b.status}"></span></td>
 <td><a th:href="@{/blotter/view/{id}(id=${b.id})}">View</a><a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a>
 <form th:action="@{/blotter/delete/{id}(id=${b.id})}" method="post" onsubmit="return confirm('Delete this blotter?');"><button type="submit">Delete</button></form></td></tr>
-</table></body></html>
+</table></div></body></html>
