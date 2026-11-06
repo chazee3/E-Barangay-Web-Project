@@ -1,8 +1,8 @@
 <!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter</title>
 <link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
 <h2>Blotter Log</h2>
-<form action="/blotter/add" method="post" class="grid">
+<form th:action="@{/blotter/add}" method="post" class="grid">
 <select name="complainantId" required><option value="">Complainant</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
 <input name="respondentName" placeholder="Respondent" required>
 <select name="incidentType"><option>Away Kapitbahay</option><option>Ingay</option><option>Utang</option><option>Others</option></select>
