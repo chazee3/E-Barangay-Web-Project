@@ -1,8 +1,9 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Residents</title>
-<style>body{font-family:sans-serif;padding:15px} input,select,button{padding:8px;margin:4px} table{width:100%;border-collapse:collapse;margin-top:15px} th,td{border:1px solid #ccc;padding:8px} td button{margin:0} td form{margin:0;display:inline} td a{margin-right:6px}</style>
-</head><body><a href="/">Home</a><h2>Resident Profiling</h2>
-<p th:if="${param.error}" style="color:#b00020"><b>Can't delete:</b> this resident still has documents or blotters. Delete those first.</p>
-<form action="/residents/add" method="post">
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Residents</title>
+<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
+<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
+<h2>Resident Profiling</h2>
+<p class="alert" th:if="${param.error}"><b>Can't delete:</b> this resident still has documents or blotters. Delete those first.</p>
+<form action="/residents/add" method="post" class="grid">
 <input name="fullname" placeholder="Fullname" required><input name="purok" placeholder="Purok"><input name="contact" placeholder="Contact"><input name="birthdate" type="date">
 <input name="address" placeholder="Address">
 <select name="sex"><option value="">Sex</option><option>Male</option><option>Female</option></select>
@@ -10,14 +11,15 @@
 <select name="category"><option value="">Category</option><option>Senior Citizen</option><option>PWD</option><option>Solo Parent</option><option>4Ps</option></select>
 <select name="disabilityType"><option value="">Disability type (if PWD)</option><option>Visual</option><option>Hearing</option><option>Speech</option><option>Physical</option><option>Intellectual</option><option>Psychosocial</option><option>Learning</option><option>Chronic illness</option><option>Others</option></select>
 <input name="pwdIdNumber" placeholder="PWD ID no. (if PWD)">
-<input name="occupation" placeholder="Occupation"><button>Add</button>
+<input name="occupation" placeholder="Occupation"><button>Add Resident</button>
 </form>
-<form action="/residents" method="get">
+<form action="/residents" method="get" class="bar">
 <input name="q" th:value="${q}" placeholder="Search name, purok, contact">
 <select name="category"><option value="">All categories</option><option th:selected="${category == 'Senior Citizen'}">Senior Citizen</option><option th:selected="${category == 'PWD'}">PWD</option><option th:selected="${category == 'Solo Parent'}">Solo Parent</option><option th:selected="${category == '4Ps'}">4Ps</option></select>
 <button>Search</button> <a href="/residents">Clear</a>
 </form>
-<table><tr><th>ID</th><th>Name</th><th>Age</th><th>Purok</th><th>Contact</th><th>Category</th><th>Status</th><th>QR</th><th>Action</th></tr>
+<p class="muted" th:text="${#lists.size(residents)} + ' resident(s)'"></p>
+<div class="wrap"><table><tr><th>ID</th><th>Name</th><th>Age</th><th>Purok</th><th>Contact</th><th>Category</th><th>Status</th><th>QR</th><th>Action</th></tr>
 <tr th:each="r : ${residents}"><td th:text="${r.id}"></td><td th:text="${r.fullname}"></td>
 <td><span th:text="${r.age}"></span><b th:if="${r.age != null and r.age >= 60}"> (Senior)</b></td>
 <td th:text="${r.purok}"></td><td th:text="${r.contact}"></td>
@@ -26,4 +28,4 @@
 <td><a th:href="@{'/qr/BRGY-'+${r.id}}">QR</a></td>
 <td><a th:href="@{/residents/view/{id}(id=${r.id})}">View</a><a th:href="@{/residents/edit/{id}(id=${r.id})}">Edit</a>
 <form th:action="@{/residents/delete/{id}(id=${r.id})}" method="post" onsubmit="return confirm('Delete this resident?');"><button type="submit">Delete</button></form></td></tr>
-</table></body></html>
+</table></div></body></html>
