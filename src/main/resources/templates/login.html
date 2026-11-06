@@ -1,0 +1,12 @@
+<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Login</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+<style>.login{max-width:380px;margin:12vh auto 0}.login h1{margin:0 0 4px}</style></head><body>
+<div class="login">
+<div class="hero"><h1>E-Barangay</h1><p>Officials login</p></div>
+<p class="alert" th:if="${param.error}">Wrong username or password.</p>
+<p class="muted" th:if="${param.logout}">You have been logged out.</p>
+<form th:action="@{/login}" method="post">
+<label>Username</label><input name="username" required autofocus>
+<label>Password</label><input name="password" type="password" required>
+<button type="submit">Log in</button>
+</form></div></body></html>
