@@ -61,18 +61,76 @@ public class MainController {
 
   // ---------- DOCUMENTS ----------
   @GetMapping("/documents") public String documents(Model m){ m.addAttribute("docs", docRepo.findAll()); m.addAttribute("residents", residentRepo.findAll()); return "documents"; }
-  @PostMapping("/documents/add") public String addDoc(@RequestParam Long residentId, @RequestParam String docType, @RequestParam String purpose){
-    Document d = new Document(); d.setResidentId(residentId); d.setDocType(docType); d.setPurpose(purpose); d.setDateIssued(LocalDate.now().toString()); d.setStatus("Issued"); docRepo.save(d); return "redirect:/documents";
+
+  @PostMapping("/documents/add") public String addDoc(@RequestParam Long residentId, @RequestParam String docType, @RequestParam(required=false) String purpose,
+      @RequestParam(required=false) String validUntil, @RequestParam(required=false) String orNumber, @RequestParam(required=false) String amountPaid){
+    Document d = new Document(); d.setResidentId(residentId); d.setDocType(docType); d.setPurpose(purpose);
+    d.setValidUntil(validUntil); d.setOrNumber(orNumber); d.setAmountPaid(amountPaid);
+    d.setDateIssued(LocalDate.now().toString()); d.setStatus("Issued"); docRepo.save(d); return "redirect:/documents";
   }
+
+  @GetMapping("/documents/edit/{id}") public String editDoc(@PathVariable Long id, Model m){
+    Document d = docRepo.findById(id).orElse(null);
+    if(d == null) return "redirect:/documents";
+    m.addAttribute("d", d);
+    m.addAttribute("residentName", residentRepo.findById(d.getResidentId()).map(Resident::getFullname).orElse("Unknown"));
+    return "document-edit";
+  }
+
+  @PostMapping("/documents/update/{id}") public String updateDoc(@PathVariable Long id, @RequestParam String docType, @RequestParam(required=false) String purpose, @RequestParam(required=false) String status,
+      @RequestParam(required=false) String validUntil, @RequestParam(required=false) String orNumber, @RequestParam(required=false) String amountPaid){
+    Document d = docRepo.findById(id).orElse(null);
+    if(d != null){
+      d.setDocType(docType); d.setPurpose(purpose); d.setStatus(status);
+      d.setValidUntil(validUntil); d.setOrNumber(orNumber); d.setAmountPaid(amountPaid);
+      docRepo.save(d);
+    }
+    return "redirect:/documents";
+  }
+
   @PostMapping("/documents/delete/{id}") public String deleteDoc(@PathVariable Long id){
     docRepo.deleteById(id); return "redirect:/documents";
   }
 
   // ---------- BLOTTER ----------
   @GetMapping("/blotter") public String blotter(Model m){ m.addAttribute("blotters", blotterRepo.findAll()); m.addAttribute("residents", residentRepo.findAll()); return "blotter"; }
-  @PostMapping("/blotter/add") public String addBlotter(@RequestParam Long complainantId, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam String details){
-    Blotter b = new Blotter(); b.setComplainantId(complainantId); b.setRespondentName(respondentName); b.setIncidentType(incidentType); b.setDetails(details); b.setDateFiled(LocalDate.now().toString()); b.setStatus("Pending"); blotterRepo.save(b); return "redirect:/blotter";
+
+  @PostMapping("/blotter/add") public String addBlotter(@RequestParam Long complainantId, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam(required=false) String details,
+      @RequestParam(required=false) String incidentDate, @RequestParam(required=false) String incidentPlace, @RequestParam(required=false) String witnesses){
+    Blotter b = new Blotter(); b.setComplainantId(complainantId); b.setRespondentName(respondentName); b.setIncidentType(incidentType); b.setDetails(details);
+    b.setIncidentDate(incidentDate); b.setIncidentPlace(incidentPlace); b.setWitnesses(witnesses);
+    b.setDateFiled(LocalDate.now().toString()); b.setStatus("Pending"); blotterRepo.save(b); return "redirect:/blotter";
   }
+
+  @GetMapping("/blotter/view/{id}") public String viewBlotter(@PathVariable Long id, Model m){
+    Blotter b = blotterRepo.findById(id).orElse(null);
+    if(b == null) return "redirect:/blotter";
+    m.addAttribute("b", b);
+    m.addAttribute("complainant", residentRepo.findById(b.getComplainantId()).map(Resident::getFullname).orElse("Unknown"));
+    return "blotter-view";
+  }
+
+  @GetMapping("/blotter/edit/{id}") public String editBlotter(@PathVariable Long id, Model m){
+    Blotter b = blotterRepo.findById(id).orElse(null);
+    if(b == null) return "redirect:/blotter";
+    m.addAttribute("b", b);
+    m.addAttribute("complainant", residentRepo.findById(b.getComplainantId()).map(Resident::getFullname).orElse("Unknown"));
+    return "blotter-edit";
+  }
+
+  @PostMapping("/blotter/update/{id}") public String updateBlotter(@PathVariable Long id, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam(required=false) String details,
+      @RequestParam(required=false) String incidentDate, @RequestParam(required=false) String incidentPlace, @RequestParam(required=false) String witnesses,
+      @RequestParam(required=false) String resolution, @RequestParam(required=false) String status){
+    Blotter b = blotterRepo.findById(id).orElse(null);
+    if(b != null){
+      b.setRespondentName(respondentName); b.setIncidentType(incidentType); b.setDetails(details);
+      b.setIncidentDate(incidentDate); b.setIncidentPlace(incidentPlace); b.setWitnesses(witnesses);
+      b.setResolution(resolution); b.setStatus(status);
+      blotterRepo.save(b);
+    }
+    return "redirect:/blotter";
+  }
+
   @PostMapping("/blotter/delete/{id}") public String deleteBlotter(@PathVariable Long id){
     blotterRepo.deleteById(id); return "redirect:/blotter";
   }
