@@ -4,6 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Controller
 public class MainController {
@@ -19,13 +20,31 @@ public class MainController {
   }
 
   // ---------- RESIDENTS ----------
-  @GetMapping("/residents") public String residents(Model m){ m.addAttribute("residents", residentRepo.findAll()); return "residents"; }
+  private boolean has(String v, String s){ return v != null && v.toLowerCase().contains(s); }
+
+  @GetMapping("/residents") public String residents(@RequestParam(required=false) String q, @RequestParam(required=false) String category, Model m){
+    List<Resident> list = residentRepo.findAll();
+    if(q != null && !q.isBlank()){
+      String s = q.toLowerCase().trim();
+      list = list.stream().filter(r -> has(r.getFullname(), s) || has(r.getPurok(), s) || has(r.getContact(), s)).toList();
+    }
+    if(category != null && !category.isBlank()){
+      list = list.stream().filter(r -> category.equals(r.getCategory())).toList();
+    }
+    m.addAttribute("residents", list);
+    m.addAttribute("q", q);
+    m.addAttribute("category", category);
+    return "residents";
+  }
 
   @PostMapping("/residents/add") public String addResident(@RequestParam String fullname, @RequestParam(required=false) String purok, @RequestParam(required=false) String contact, @RequestParam(required=false) String birthdate,
-      @RequestParam(required=false) String address, @RequestParam(required=false) String sex, @RequestParam(required=false) String civilStatus, @RequestParam(required=false) String occupation){
+      @RequestParam(required=false) String address, @RequestParam(required=false) String sex, @RequestParam(required=false) String civilStatus, @RequestParam(required=false) String occupation,
+      @RequestParam(required=false) String category, @RequestParam(required=false) String disabilityType, @RequestParam(required=false) String pwdIdNumber){
     Resident r = new Resident();
     r.setFullname(fullname); r.setPurok(purok); r.setContact(contact); r.setBirthdate(birthdate);
     r.setAddress(address); r.setSex(sex); r.setCivilStatus(civilStatus); r.setOccupation(occupation);
+    r.setCategory(category); r.setStatus("Active");
+    r.setDisabilityType(disabilityType); r.setPwdIdNumber(pwdIdNumber);
     residentRepo.save(r); return "redirect:/residents";
   }
 
@@ -36,11 +55,15 @@ public class MainController {
   }
 
   @PostMapping("/residents/update/{id}") public String updateResident(@PathVariable Long id, @RequestParam String fullname, @RequestParam(required=false) String purok, @RequestParam(required=false) String contact, @RequestParam(required=false) String birthdate,
-      @RequestParam(required=false) String address, @RequestParam(required=false) String sex, @RequestParam(required=false) String civilStatus, @RequestParam(required=false) String occupation){
+      @RequestParam(required=false) String address, @RequestParam(required=false) String sex, @RequestParam(required=false) String civilStatus, @RequestParam(required=false) String occupation,
+      @RequestParam(required=false) String status, @RequestParam(required=false) String category,
+      @RequestParam(required=false) String disabilityType, @RequestParam(required=false) String pwdIdNumber){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r != null){
       r.setFullname(fullname); r.setPurok(purok); r.setContact(contact); r.setBirthdate(birthdate);
       r.setAddress(address); r.setSex(sex); r.setCivilStatus(civilStatus); r.setOccupation(occupation);
+      r.setStatus(status); r.setCategory(category);
+      r.setDisabilityType(disabilityType); r.setPwdIdNumber(pwdIdNumber);
       residentRepo.save(r);
     }
     return "redirect:/residents";
