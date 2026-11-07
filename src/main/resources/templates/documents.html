@@ -62,7 +62,7 @@
         </form>
     </div>
 
-    <!-- DOCUMENTS TABLE (NO QR COLUMN) -->
+    <!-- DOCUMENTS TABLE -->
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
             <thead class="table-custom">
@@ -83,8 +83,14 @@
                     <td th:text="${d.docType}">Barangay Clearance</td>
                     <td th:text="${d.purpose != null ? d.purpose : '-'}">-</td>
                     <td th:text="${d.dateIssued}">2026-11-06</td>
+                    <!-- Color-Coded Status Badge -->
                     <td>
-                        <span class="badge bg-success" th:text="${d.status}">Issued</span>
+                        <span th:if="${d.status == 'Released'}" class="badge bg-success">Released</span>
+                        <span th:if="${d.status == 'Issued'}" class="badge bg-primary">Issued</span>
+                        <span th:if="${d.status == 'Pending'}" class="badge bg-warning text-dark">Pending</span>
+                        <span th:if="${d.status == 'Expired'}" class="badge bg-danger">Expired</span>
+                        <span th:unless="${d.status == 'Released' or d.status == 'Issued' or d.status == 'Pending' or d.status == 'Expired'}" 
+                              class="badge bg-secondary" th:text="${d.status}">Status</span>
                     </td>
                     <td>
                         <a th:href="@{'/documents/view/' + ${d.id}}" class="btn btn-sm btn-outline-secondary">View</a>
