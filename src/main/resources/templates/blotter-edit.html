@@ -50,14 +50,13 @@
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold text-muted">Complain / Incident</label>
-                    <!-- Supports typed text with autocomplete options -->
-                    <input list="complainOptions" name="incidentType" th:value="${b.incidentType}" class="form-control" placeholder="e.g. Away Kapitbahay, Utang, Ingay" required>
+                    <input list="complainOptions" name="incidentType" th:value="${b.incidentType}" class="form-control" placeholder="e.g. Physical Injury, Utang" required>
                     <datalist id="complainOptions">
                         <option value="Away Kapitbahay">
                         <option value="Ingay">
                         <option value="Utang">
-                        <option value="Pagnanakaw / Theft">
                         <option value="Physical Injury">
+                        <option value="Pagnanakaw / Theft">
                         <option value="Boundary Dispute">
                         <option value="Others">
                     </datalist>
@@ -85,7 +84,7 @@
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <label class="form-label fw-semibold text-muted">Status</label>
                     <select name="status" class="form-select">
                         <option value="Pending" th:selected="${b.status == 'Pending'}">Pending</option>
@@ -94,7 +93,11 @@
                         <option value="Dismissed" th:selected="${b.status == 'Dismissed'}">Dismissed</option>
                     </select>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-muted">Scheduled Hearing Date</label>
+                    <input type="date" name="hearingDate" th:value="${b.hearingDate}" class="form-control">
+                </div>
+                <div class="col-md-4">
                     <label class="form-label fw-semibold text-muted">Resolution Notes</label>
                     <input type="text" name="resolution" th:value="${b.resolution}" class="form-control" placeholder="Resolution / Agreement">
                 </div>
