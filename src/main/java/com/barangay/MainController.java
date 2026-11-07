@@ -250,16 +250,18 @@ public class MainController {
       @RequestParam(required=false) String details,
       @RequestParam(required=false) String incidentDate,
       @RequestParam(required=false) String incidentPlace,
-      @RequestParam(required=false) String witnesses){
+      @RequestParam(required=false) String witnesses,
+      @RequestParam(required=false) String hearingDate){
     Blotter b = new Blotter();
     b.setComplainantId(complainantId);
     residentRepo.findById(complainantId).ifPresent(r -> b.setComplainant(r.getFullname()));
     b.setRespondentName(respondentName);
-    b.setIncidentType(incidentType); // Complain
+    b.setIncidentType(incidentType);
     b.setDetails(details);
     b.setIncidentDate(incidentDate);
     b.setIncidentPlace(incidentPlace);
     b.setWitnesses(witnesses);
+    b.setHearingDate(hearingDate); // Saves hearing date if set upon filing
     b.setDateFiled(LocalDate.now().toString());
     b.setStatus("Pending");
     blotterRepo.save(b);
@@ -286,15 +288,30 @@ public class MainController {
     return "blotter-edit";
   }
 
-  @PostMapping("/blotter/update/{id}") public String updateBlotter(@PathVariable Long id, @RequestParam(required=false) String complainant, @RequestParam String respondentName, @RequestParam String incidentType, @RequestParam(required=false) String details,
-      @RequestParam(required=false) String incidentDate, @RequestParam(required=false) String incidentPlace, @RequestParam(required=false) String witnesses,
-      @RequestParam(required=false) String resolution, @RequestParam(required=false) String status){
+  @PostMapping("/blotter/update/{id}") public String updateBlotter(
+      @PathVariable Long id, 
+      @RequestParam(required=false) String complainant, 
+      @RequestParam String respondentName, 
+      @RequestParam String incidentType, 
+      @RequestParam(required=false) String details,
+      @RequestParam(required=false) String incidentDate, 
+      @RequestParam(required=false) String incidentPlace, 
+      @RequestParam(required=false) String witnesses,
+      @RequestParam(required=false) String resolution, 
+      @RequestParam(required=false) String status,
+      @RequestParam(required=false) String hearingDate){
     Blotter b = blotterRepo.findById(id).orElse(null);
     if(b != null){
       if(complainant != null && !complainant.isBlank()) b.setComplainant(complainant);
-      b.setRespondentName(respondentName); b.setIncidentType(incidentType); b.setDetails(details);
-      b.setIncidentDate(incidentDate); b.setIncidentPlace(incidentPlace); b.setWitnesses(witnesses);
-      b.setResolution(resolution); b.setStatus(status);
+      b.setRespondentName(respondentName); 
+      b.setIncidentType(incidentType); 
+      b.setDetails(details);
+      b.setIncidentDate(incidentDate); 
+      b.setIncidentPlace(incidentPlace); 
+      b.setWitnesses(witnesses);
+      b.setResolution(resolution); 
+      b.setStatus(status);
+      b.setHearingDate(hearingDate); // Properly saves/updates hearing date!
       blotterRepo.save(b);
     }
     return "redirect:/blotter";
