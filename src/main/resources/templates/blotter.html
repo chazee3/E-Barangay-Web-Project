@@ -19,7 +19,7 @@
     <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/">Dashboard</a>
         <a class="nav-link" href="/residents">Residents</a>
-        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link active" href="/documents">Documents</a>
         <a class="nav-link active" href="/blotter">Blotter</a>
         <a class="nav-link text-warning" href="/logout">Logout</a>
     </div>
@@ -28,12 +28,15 @@
 <div class="container my-4">
     <h3 class="fw-bold mb-4">Blotter Log</h3>
 
-    <!-- FILE BLOTTER FORM -->
+    <!-- FILE BLOTTER FORM (WIRED TO RESIDENT DATABASE) -->
     <div class="card p-3 mb-4 shadow-sm border-0">
         <form th:action="@{/blotter/add}" method="post">
             <div class="row g-2 mb-2">
                 <div class="col-md-3">
-                    <input type="text" name="complainant" class="form-control" placeholder="Complainant *" required>
+                    <select name="complainantId" class="form-select" required>
+                        <option value="">Select Complainant (Resident) *</option>
+                        <option th:each="res : ${residents}" th:value="${res.id}" th:text="${res.fullname} + ' (ID: ' + ${res.id} + ')'"></option>
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="respondentName" class="form-control" placeholder="Respondent *" required>
@@ -63,7 +66,7 @@
         </form>
     </div>
 
-    <!-- BLOTTER TABLE (TYPE -> COMPLAIN, HEARING COLUMN REMOVED) -->
+    <!-- BLOTTER TABLE -->
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
             <thead class="table-custom">
