@@ -1,27 +1,116 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Resident Profile</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
-<a href="/residents">&larr; Back</a> | <a th:href="@{/residents/edit/{id}(id=${r.id})}">Edit</a>
-<h2 th:text="${r.fullname}"></h2>
-<table class="info">
-<tr><td>ID</td><td th:text="${r.id}"></td></tr>
-<tr><td>Status</td><td th:text="${r.status}"></td></tr>
-<tr><td>Category</td><td th:text="${r.category}"></td></tr>
-<tr><td>Disability type</td><td th:text="${r.disabilityType}"></td></tr>
-<tr><td>PWD ID number</td><td th:text="${r.pwdIdNumber}"></td></tr>
-<tr><td>Age</td><td><span th:text="${r.age}"></span><b th:if="${r.age != null and r.age >= 60}"> (Senior)</b></td></tr>
-<tr><td>Purok</td><td th:text="${r.purok}"></td></tr>
-<tr><td>Address</td><td th:text="${r.address}"></td></tr>
-<tr><td>Contact</td><td th:text="${r.contact}"></td></tr>
-<tr><td>Birthdate</td><td th:text="${r.birthdate}"></td></tr>
-<tr><td>Sex</td><td th:text="${r.sex}"></td></tr>
-<tr><td>Civil status</td><td th:text="${r.civilStatus}"></td></tr>
-<tr><td>Occupation</td><td th:text="${r.occupation}"></td></tr>
-</table>
-<h3>Documents</h3>
-<div class="wrap"><table><tr><th>ID</th><th>Type</th><th>Purpose</th><th>Date</th></tr>
-<tr th:each="d : ${docs}"><td th:text="${d.id}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td></tr></table></div>
-<h3>Blotter records (as complainant)</h3>
-<div class="wrap"><table><tr><th>ID</th><th>Respondent</th><th>Type</th><th>Date</th></tr>
-<tr th:each="b : ${blotters}"><td th:text="${b.id}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td></tr></table></div>
-</body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resident Profile - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+        .table-custom thead { background-color: #15803d; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link active" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="/residents" class="btn btn-outline-secondary btn-sm">&larr; Back to Residents</a>
+            <a th:href="@{'/residents/edit/' + ${r.id}}" class="btn btn-primary btn-sm ms-2">Edit Resident</a>
+        </div>
+        <span class="badge bg-success fs-6" th:if="${r.status == 'Active'}">Active</span>
+        <span class="badge bg-secondary fs-6" th:unless="${r.status == 'Active'}" th:text="${r.status}">Status</span>
+    </div>
+
+    <!-- Resident Profile Card -->
+    <div class="card p-4 shadow-sm border-0 mb-4 bg-white">
+        <h3 class="fw-bold text-success mb-3" th:text="${r.fullname}">Juan Dela Cruz</h3>
+        
+        <div class="row g-3">
+            <div class="col-md-6">
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><th class="text-muted" style="width: 35%;">Resident ID:</th><td class="fw-bold" th:text="${r.id}"></td></tr>
+                    <tr><th class="text-muted">Category:</th><td th:text="${r.category != null ? r.category : '-'}">-</td></tr>
+                    <tr><th class="text-muted">Disability type:</th><td th:text="${r.disabilityType != null ? r.disabilityType : 'None'}">None</td></tr>
+                    <tr>
+                        <th class="text-muted">Age:</th>
+                        <td>
+                            <span th:text="${r.age != null ? r.age : '-'}">-</span>
+                            <span class="badge bg-warning text-dark ms-1" th:if="${r.age != null and r.age >= 60}">Senior</span>
+                        </td>
+                    </tr>
+                    <tr><th class="text-muted">Birthdate:</th><td th:text="${r.birthdate != null ? r.birthdate : '-'}">-</td></tr>
+                </table>
+            </div>
+
+            <div class="col-md-6">
+                <table class="table table-borderless table-sm mb-0">
+                    <tr><th class="text-muted" style="width: 35%;">Address:</th><td th:text="${r.address != null ? r.address : '-'}">-</td></tr>
+                    <tr><th class="text-muted">Contact:</th><td th:text="${r.contact != null ? r.contact : '-'}">-</td></tr>
+                    <tr><th class="text-muted">Sex:</th><td th:text="${r.sex != null ? r.sex : '-'}">-</td></tr>
+                    <tr><th class="text-muted">Civil status:</th><td th:text="${r.civilStatus != null ? r.civilStatus : '-'}">-</td></tr>
+                    <tr><th class="text-muted">Occupation:</th><td th:text="${r.occupation != null ? r.occupation : '-'}">-</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documents History -->
+    <h5 class="fw-bold text-dark mt-4 mb-2">Issued Documents</h5>
+    <div class="table-responsive mb-4">
+        <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-custom">
+                <tr><th>ID</th><th>Type</th><th>Purpose</th><th>Date Issued</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="d : ${docs}">
+                    <td th:text="${d.id}"></td>
+                    <td th:text="${d.docType}"></td>
+                    <td th:text="${d.purpose}"></td>
+                    <td th:text="${d.dateIssued}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(docs)}">
+                    <td colspan="4" class="text-center text-muted py-2">No documents issued yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Blotter Records -->
+    <h5 class="fw-bold text-dark mb-2">Blotter Records (As Complainant)</h5>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-custom">
+                <tr><th>Case No.</th><th>Respondent</th><th>Complain</th><th>Date Filed</th></tr>
+            </thead>
+            <tbody>
+                <tr th:each="b : ${blotters}">
+                    <td th:text="${b.caseNo != null ? b.caseNo : 'BLT-' + b.id}"></td>
+                    <td th:text="${b.respondentName}"></td>
+                    <td th:text="${b.incidentType}"></td>
+                    <td th:text="${b.dateFiled}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(blotters)}">
+                    <td colspan="4" class="text-center text-muted py-2">No blotter records found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
