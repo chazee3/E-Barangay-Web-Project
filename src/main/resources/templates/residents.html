@@ -1,31 +1,149 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Residents</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
-<h2>Resident Profiling</h2>
-<p class="alert" th:if="${param.error}"><b>Can't delete:</b> this resident still has documents or blotters. Delete those first.</p>
-<form th:action="@{/residents/add}" method="post" class="grid">
-<input name="fullname" placeholder="Fullname" required><input name="purok" placeholder="Purok"><input name="contact" placeholder="Contact"><input name="birthdate" type="date">
-<input name="address" placeholder="Address">
-<select name="sex"><option value="">Sex</option><option>Male</option><option>Female</option></select>
-<select name="civilStatus"><option value="">Civil Status</option><option>Single</option><option>Married</option><option>Widowed</option><option>Separated</option></select>
-<select name="category"><option value="">Category</option><option>Senior Citizen</option><option>PWD</option><option>Solo Parent</option><option>4Ps</option></select>
-<select name="disabilityType"><option value="">Disability type (if PWD)</option><option>Visual</option><option>Hearing</option><option>Speech</option><option>Physical</option><option>Intellectual</option><option>Psychosocial</option><option>Learning</option><option>Chronic illness</option><option>Others</option></select>
-<input name="pwdIdNumber" placeholder="PWD ID no. (if PWD)">
-<input name="occupation" placeholder="Occupation"><button>Add Resident</button>
-</form>
-<form action="/residents" method="get" class="bar">
-<input name="q" th:value="${q}" placeholder="Search name, purok, contact">
-<select name="category"><option value="">All categories</option><option th:selected="${category == 'Senior Citizen'}">Senior Citizen</option><option th:selected="${category == 'PWD'}">PWD</option><option th:selected="${category == 'Solo Parent'}">Solo Parent</option><option th:selected="${category == '4Ps'}">4Ps</option></select>
-<button>Search</button> <a href="/residents">Clear</a>
-</form>
-<p class="muted" th:text="${#lists.size(residents)} + ' resident(s)'"></p>
-<div class="wrap"><table><tr><th>ID</th><th>Name</th><th>Age</th><th>Purok</th><th>Contact</th><th>Category</th><th>Status</th><th>QR</th><th>Action</th></tr>
-<tr th:each="r : ${residents}"><td th:text="${r.id}"></td><td th:text="${r.fullname}"></td>
-<td><span th:text="${r.age}"></span><b th:if="${r.age != null and r.age >= 60}"> (Senior)</b></td>
-<td th:text="${r.purok}"></td><td th:text="${r.contact}"></td>
-<td><span th:text="${r.category}"></span><span th:if="${r.category == 'PWD' and r.disabilityType != null and r.disabilityType != ''}" th:text="' - ' + ${r.disabilityType}"></span></td>
-<td th:text="${r.status}"></td>
-<td><a th:href="@{'/qr/BRGY-'+${r.id}}">QR</a></td>
-<td><a th:href="@{/residents/view/{id}(id=${r.id})}">View</a><a th:href="@{/residents/edit/{id}(id=${r.id})}">Edit</a>
-<form th:action="@{/residents/delete/{id}(id=${r.id})}" method="post" onsubmit="return confirm('Delete this resident?');"><button type="submit">Delete</button></form></td></tr>
-</table></div></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Residents - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+        .table-custom thead { background-color: #15803d; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link active" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <h3 class="fw-bold mb-4">Resident Profiling</h3>
+
+    <!-- ADD RESIDENT FORM -->
+    <div class="card p-3 mb-4 shadow-sm border-0">
+        <form th:action="@{/residents/add}" method="post">
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <input type="text" name="firstName" class="form-control" placeholder="First Name *" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="middleName" class="form-control" placeholder="Middle Name">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="lastName" class="form-control" placeholder="Last Name *" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="extension" class="form-control" placeholder="Extension (Jr, Sr, III)">
+                </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+                <div class="col-md-4">
+                    <input type="text" name="address" class="form-control" placeholder="Address">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="contact" class="form-control" placeholder="Contact">
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="birthdate" class="form-control" placeholder="Birthdate">
+                </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-2">
+                    <select name="sex" class="form-select">
+                        <option value="">Sex</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <select name="civilStatus" class="form-select">
+                        <option value="">Civil Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Widowed">Widowed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="category" class="form-select">
+                        <option value="">Category</option>
+                        <option value="PWD">PWD</option>
+                        <option value="Senior Citizen">Senior Citizen</option>
+                        <option value="Solo Parent">Solo Parent</option>
+                        <option value="Youth">Youth</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="disabilityType" class="form-control" placeholder="Disability type (if PWD)">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="occupation" class="form-control" placeholder="Occupation">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-custom px-4">Add Resident</button>
+        </form>
+    </div>
+
+    <!-- SEARCH FILTER -->
+    <div class="row g-2 mb-3">
+        <div class="col-md-6">
+            <form th:action="@{/residents}" method="get" class="d-flex gap-2">
+                <input type="text" name="q" th:value="${q}" class="form-control" placeholder="Search name, address, contact">
+                <button type="submit" class="btn btn-success">Search</button>
+                <a href="/residents" class="btn btn-outline-secondary">Clear</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- RESIDENTS TABLE (NO QR COLUMN) -->
+    <p class="text-muted small" th:text="${#lists.size(residents)} + ' resident(s)'">0 residents</p>
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-custom">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Contact</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="r : ${residents}">
+                    <td th:text="${r.id}">1</td>
+                    <td class="fw-bold" th:text="${r.fullname}">Juan Dela Cruz</td>
+                    <td th:text="${r.address != null ? r.address : '-'}">-</td>
+                    <td th:text="${r.contact}">09123456789</td>
+                    <td th:text="${r.category != null ? r.category : '-'}">-</td>
+                    <td>
+                        <span class="badge bg-success" th:if="${r.status == 'Active'}">Active</span>
+                        <span class="badge bg-secondary" th:unless="${r.status == 'Active'}" th:text="${r.status}">Inactive</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/residents/view/' + ${r.id}}" class="btn btn-sm btn-outline-secondary">View</a>
+                        <a th:href="@{'/residents/edit/' + ${r.id}}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form th:action="@{'/residents/delete/' + ${r.id}}" method="post" class="d-inline" onsubmit="return confirm('Delete this resident?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
