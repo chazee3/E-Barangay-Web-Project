@@ -13,6 +13,7 @@ public class Blotter {
   private String respondentName;
   private String incidentType; // Complain field
   private String details;
+  private String contactNum
   private String incidentDate;
   private String incidentPlace;
   private String witnesses;
@@ -42,6 +43,9 @@ public class Blotter {
   public String getDetails() { return details; }
   public void setDetails(String details) { this.details = details; }
 
+  public String getContactNum() { return contactNum;}
+  public void setContactNum(String contactNum) {this.contactNum = contactNum; }
+  
   public String getIncidentDate() { return incidentDate; }
   public void setIncidentDate(String incidentDate) { this.incidentDate = incidentDate; }
 
