@@ -1,17 +1,112 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Blotter</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
-<a href="/blotter">&larr; Back</a><h2>Edit Blotter</h2>
-<p class="muted">Case No.: <b th:text="${b.caseNo}"></b> | Complainant: <b th:text="${complainant}"></b></p>
-<form th:action="@{/blotter/update/{id}(id=${b.id})}" method="post">
-<label>Respondent</label><input name="respondentName" th:value="${b.respondentName}" required>
-<label>Incident type</label><select name="incidentType"><option th:selected="${b.incidentType == 'Away Kapitbahay'}">Away Kapitbahay</option><option th:selected="${b.incidentType == 'Ingay'}">Ingay</option><option th:selected="${b.incidentType == 'Utang'}">Utang</option><option th:selected="${b.incidentType == 'Others'}">Others</option></select>
-<label>Incident date</label><input name="incidentDate" type="date" min="2020-01-01" max="2100-12-31" th:value="${b.incidentDate}">
-<label>Incident place</label><input name="incidentPlace" th:value="${b.incidentPlace}">
-<label>Witnesses</label><input name="witnesses" th:value="${b.witnesses}">
-<label>Details</label><textarea name="details" rows="4" th:text="${b.details}"></textarea>
-<label>Hearing date</label><input name="hearingDate" type="date" min="2020-01-01" max="2100-12-31" th:value="${b.hearingDate}">
-<label>Status</label><select name="status"><option th:selected="${b.status == 'Pending'}">Pending</option><option th:selected="${b.status == 'Settled'}">Settled</option><option th:selected="${b.status == 'Escalated'}">Escalated</option><option th:selected="${b.status == 'Dismissed'}">Dismissed</option></select>
-<label>Resolution notes</label><textarea name="resolution" rows="4" th:text="${b.resolution}"></textarea>
-<button type="submit">Save</button>
-</form></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Blotter - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link active" href="/blotter">Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="fw-bold text-success mb-1">Edit Blotter</h3>
+            <p class="text-muted mb-0">Case No.: <b th:text="${b.caseNo != null ? b.caseNo : 'BLT-' + b.id}">BLT-0001</b></p>
+        </div>
+        <a href="/blotter" class="btn btn-outline-secondary btn-sm">&larr; Back to Blotter</a>
+    </div>
+
+    <div class="card p-4 shadow-sm border-0 bg-white">
+        <form th:action="@{'/blotter/update/' + ${b.id}}" method="post">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Complainant Name</label>
+                    <input type="text" name="complainant" th:value="${complainant}" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Respondent Name</label>
+                    <input type="text" name="respondentName" th:value="${b.respondentName}" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Complain / Incident</label>
+                    <!-- Supports typed text with autocomplete options -->
+                    <input list="complainOptions" name="incidentType" th:value="${b.incidentType}" class="form-control" placeholder="e.g. Away Kapitbahay, Utang, Ingay" required>
+                    <datalist id="complainOptions">
+                        <option value="Away Kapitbahay">
+                        <option value="Ingay">
+                        <option value="Utang">
+                        <option value="Pagnanakaw / Theft">
+                        <option value="Physical Injury">
+                        <option value="Boundary Dispute">
+                        <option value="Others">
+                    </datalist>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Incident Date</label>
+                    <input type="date" name="incidentDate" th:value="${b.incidentDate}" class="form-control">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Incident Place</label>
+                    <input type="text" name="incidentPlace" th:value="${b.incidentPlace}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Witnesses</label>
+                    <input type="text" name="witnesses" th:value="${b.witnesses}" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-muted">Details</label>
+                <textarea name="details" class="form-control" rows="3" th:text="${b.details}"></textarea>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Pending" th:selected="${b.status == 'Pending'}">Pending</option>
+                        <option value="Settled" th:selected="${b.status == 'Settled'}">Settled</option>
+                        <option value="Escalated" th:selected="${b.status == 'Escalated'}">Escalated</option>
+                        <option value="Dismissed" th:selected="${b.status == 'Dismissed'}">Dismissed</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Resolution Notes</label>
+                    <input type="text" name="resolution" th:value="${b.resolution}" class="form-control" placeholder="Resolution / Agreement">
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-custom px-4">Save Changes</button>
+                <a href="/blotter" class="btn btn-outline-secondary px-3">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
