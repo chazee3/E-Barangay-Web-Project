@@ -13,13 +13,13 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar -->
+<!-- Navbar with Logout -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/">Dashboard</a>
         <a class="nav-link" href="/residents">Residents</a>
-        <a class="nav-link active" href="/documents">Documents</a>
+        <a class="nav-link" href="/documents">Documents</a>
         <a class="nav-link active" href="/blotter">Blotter</a>
         <a class="nav-link text-warning" href="/logout">Logout</a>
     </div>
@@ -42,7 +42,16 @@
                     <input type="text" name="respondentName" class="form-control" placeholder="Respondent *" required>
                 </div>
                 <div class="col-md-3">
-                    <input type="text" name="incidentType" class="form-control" placeholder="Complain *" required>
+                    <input list="complainOptions" name="incidentType" class="form-control" placeholder="Complain *" required>
+                    <datalist id="complainOptions">
+                        <option value="Away Kapitbahay">
+                        <option value="Ingay">
+                        <option value="Utang">
+                        <option value="Pagnanakaw / Theft">
+                        <option value="Physical Injury">
+                        <option value="Boundary Dispute">
+                        <option value="Others">
+                    </datalist>
                 </div>
                 <div class="col-md-3">
                     <input type="date" name="incidentDate" class="form-control" placeholder="Incident Date">
@@ -91,6 +100,7 @@
                         <span class="badge bg-warning text-dark" th:if="${b.status == 'Pending'}">Pending</span>
                         <span class="badge bg-success" th:if="${b.status == 'Settled'}">Settled</span>
                         <span class="badge bg-danger" th:if="${b.status == 'Escalated'}">Escalated</span>
+                        <span class="badge bg-secondary" th:if="${b.status == 'Dismissed'}">Dismissed</span>
                     </td>
                     <td>
                         <a th:href="@{'/blotter/view/' + ${b.id}}" class="btn btn-sm btn-outline-secondary">View</a>
