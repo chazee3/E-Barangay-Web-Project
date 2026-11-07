@@ -1,27 +1,106 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blotter</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
-<h2>Blotter Log</h2>
-<form th:action="@{/blotter/add}" method="post" class="grid">
-<select name="complainantId" required><option value="">Complainant</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
-<input name="respondentName" placeholder="Respondent" required>
-<select name="incidentType"><option>Away Kapitbahay</option><option>Ingay</option><option>Utang</option><option>Others</option></select>
-<label>Incident date <input name="incidentDate" type="date" min="2020-01-01" max="2100-12-31"></label>
-<input name="incidentPlace" placeholder="Incident place">
-<input name="witnesses" placeholder="Witnesses">
-<textarea name="details" placeholder="Details" rows="3"></textarea>
-<button>File Blotter</button>
-</form>
-<form action="/blotter" method="get" class="bar">
-<input name="q" th:value="${q}" placeholder="Search name, respondent, place, case no.">
-<select name="type"><option value="">All types</option><option th:selected="${type == 'Away Kapitbahay'}">Away Kapitbahay</option><option th:selected="${type == 'Ingay'}">Ingay</option><option th:selected="${type == 'Utang'}">Utang</option><option th:selected="${type == 'Others'}">Others</option></select>
-<select name="status"><option value="">All status</option><option th:selected="${status == 'Pending'}">Pending</option><option th:selected="${status == 'Settled'}">Settled</option><option th:selected="${status == 'Escalated'}">Escalated</option><option th:selected="${status == 'Dismissed'}">Dismissed</option></select>
-<button>Search</button> <a href="/blotter">Clear</a>
-</form>
-<p class="muted" th:text="${#lists.size(blotters)} + ' case(s)'"></p>
-<div class="wrap"><table><tr><th>Case No.</th><th>Complainant</th><th>Respondent</th><th>Type</th><th>Filed</th><th>Hearing</th><th>Status</th><th>Action</th></tr>
-<tr th:each="b:${blotters}"><td th:text="${b.caseNo}"></td><td th:text="${names[b.complainantId] ?: 'Unknown'}"></td><td th:text="${b.respondentName}"></td><td th:text="${b.incidentType}"></td><td th:text="${b.dateFiled}"></td><td th:text="${b.hearingDate}"></td>
-<td><span th:text="${b.status}" th:class="'badge ' + ${b.status}"></span></td>
-<td><a th:href="@{/blotter/view/{id}(id=${b.id})}">View</a><a th:href="@{/blotter/edit/{id}(id=${b.id})}">Edit</a>
-<form th:action="@{/blotter/delete/{id}(id=${b.id})}" method="post" onsubmit="return confirm('Delete this blotter?');"><button type="submit">Delete</button></form></td></tr>
-</table></div></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Blotter - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+        .table-custom thead { background-color: #15803d; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link active" href="/blotter">Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <h3 class="fw-bold mb-4">Blotter Log</h3>
+
+    <!-- FILE BLOTTER FORM -->
+    <div class="card p-3 mb-4 shadow-sm border-0">
+        <form th:action="@{/blotter/add}" method="post">
+            <div class="row g-2 mb-2">
+                <div class="col-md-3">
+                    <input type="text" name="complainant" class="form-control" placeholder="Complainant *" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="respondentName" class="form-control" placeholder="Respondent *" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="incidentType" class="form-control" placeholder="Complain *" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="incidentDate" class="form-control" placeholder="Incident Date">
+                </div>
+            </div>
+
+            <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                    <input type="text" name="incidentPlace" class="form-control" placeholder="Incident Place">
+                </div>
+                <div class="col-md-6">
+                    <input type="text" name="witnesses" class="form-control" placeholder="Witnesses">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <textarea name="details" class="form-control" rows="3" placeholder="Details of the incident..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-custom px-4">File Blotter</button>
+        </form>
+    </div>
+
+    <!-- BLOTTER TABLE (TYPE -> COMPLAIN, HEARING COLUMN REMOVED) -->
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-custom">
+                <tr>
+                    <th>Case No.</th>
+                    <th>Complainant</th>
+                    <th>Respondent</th>
+                    <th>Complain</th>
+                    <th>Filed</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="b : ${blotters}">
+                    <td class="fw-bold" th:text="${b.caseNo != null ? b.caseNo : 'BLT-' + b.id}">BLT-0001</td>
+                    <td th:text="${b.complainant != null ? b.complainant : (names[b.complainantId] != null ? names[b.complainantId] : 'Complainant #' + b.complainantId)}">Complainant</td>
+                    <td th:text="${b.respondentName}">Respondent</td>
+                    <td th:text="${b.incidentType}">Complain</td>
+                    <td th:text="${b.dateFiled}">2026-11-06</td>
+                    <td>
+                        <span class="badge bg-warning text-dark" th:if="${b.status == 'Pending'}">Pending</span>
+                        <span class="badge bg-success" th:if="${b.status == 'Settled'}">Settled</span>
+                        <span class="badge bg-danger" th:if="${b.status == 'Escalated'}">Escalated</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/blotter/view/' + ${b.id}}" class="btn btn-sm btn-outline-secondary">View</a>
+                        <a th:href="@{'/blotter/edit/' + ${b.id}}" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <form th:action="@{'/blotter/delete/' + ${b.id}}" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
