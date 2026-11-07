@@ -1,25 +1,103 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Documents</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
-<h2>Document Request</h2>
-<form th:action="@{/documents/add}" method="post" class="grid">
-<select name="residentId" required><option value="">Select Resident</option><option th:each="r:${residents}" th:value="${r.id}" th:text="${r.fullname}"></option></select>
-<select name="docType"><option>Barangay Clearance</option><option>Indigency</option><option>Residency</option><option>Good Moral</option><option>Business Clearance</option></select>
-<input name="purpose" placeholder="Purpose">
-<input name="orNumber" placeholder="OR Number"><input name="amountPaid" placeholder="Amount Paid">
-<label>Valid until <input name="validUntil" type="date" min="2020-01-01" max="2100-12-31"></label>
-<button>Issue Document</button>
-</form>
-<form action="/documents" method="get" class="bar">
-<input name="q" th:value="${q}" placeholder="Search name, purpose, OR no., control no.">
-<select name="type"><option value="">All types</option><option th:selected="${type == 'Barangay Clearance'}">Barangay Clearance</option><option th:selected="${type == 'Indigency'}">Indigency</option><option th:selected="${type == 'Residency'}">Residency</option><option th:selected="${type == 'Good Moral'}">Good Moral</option><option th:selected="${type == 'Business Clearance'}">Business Clearance</option></select>
-<select name="status"><option value="">All status</option><option th:selected="${status == 'Issued'}">Issued</option><option th:selected="${status == 'Released'}">Released</option><option th:selected="${status == 'Expired'}">Expired</option></select>
-<button>Search</button> <a href="/documents">Clear</a>
-</form>
-<p class="muted" th:text="${#lists.size(docs)} + ' document(s)'"></p>
-<div class="wrap"><table><tr><th>Control No.</th><th>Resident</th><th>Type</th><th>Purpose</th><th>Issued</th><th>Valid until</th><th>Status</th><th>Action</th></tr>
-<tr th:each="d:${docs}"><td th:text="${d.controlNo}"></td><td th:text="${names[d.residentId] ?: 'Unknown'}"></td><td th:text="${d.docType}"></td><td th:text="${d.purpose}"></td><td th:text="${d.dateIssued}"></td><td th:text="${d.validUntil}"></td>
-<td><span th:text="${d.displayStatus}" th:class="'badge ' + ${d.displayStatus}"></span></td>
-<td><a th:href="@{/documents/view/{id}(id=${d.id})}">View/Print</a><a th:href="@{/documents/edit/{id}(id=${d.id})}">Edit</a>
-<form th:action="@{/documents/delete/{id}(id=${d.id})}" method="post" onsubmit="return confirm('Delete this document?');"><button type="submit">Delete</button></form></td></tr>
-</table></div></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Documents - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+        .table-custom thead { background-color: #15803d; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link" href="/residents">Residents</a>
+        <a class="nav-link active" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <h3 class="fw-bold mb-4">Document Issuance</h3>
+
+    <!-- ADD DOCUMENT FORM -->
+    <div class="card p-3 mb-4 shadow-sm border-0">
+        <form th:action="@{/documents/add}" method="post">
+            <div class="row g-2 mb-3">
+                <div class="col-md-4">
+                    <input type="text" name="requester" class="form-control" placeholder="Requester Name *" required>
+                </div>
+                <div class="col-md-4">
+                    <select name="docType" class="form-select" required>
+                        <option value="">Select Document Type *</option>
+                        <option value="Barangay Clearance">Barangay Clearance</option>
+                        <option value="Sedula">Sedula</option>
+                        <option value="Purok Clearance">Purok Clearance</option>
+                        <option value="Purok Certification">Purok Certification</option>
+                        <option value="Low Income Certificate">Low Income Certificate</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="date" name="validUntil" class="form-control" placeholder="Valid Until">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" name="purpose" class="form-control" placeholder="Purpose (e.g. Employment, Scholarship, Local requirement)">
+            </div>
+
+            <button type="submit" class="btn btn-custom px-4">Issue Document</button>
+        </form>
+    </div>
+
+    <!-- DOCUMENTS TABLE -->
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
+            <thead class="table-custom">
+                <tr>
+                    <th>ID</th>
+                    <th>Requester</th>
+                    <th>Document Type</th>
+                    <th>Purpose</th>
+                    <th>Date Issued</th>
+                    <th>Status</th>
+                    <th>QR</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="d : ${docs}">
+                    <td th:text="${d.id}">1</td>
+                    <td class="fw-bold" th:text="${d.requester != null ? d.requester : (names[d.residentId] != null ? names[d.residentId] : 'Resident #' + d.residentId)}">Requester</td>
+                    <td th:text="${d.docType}">Barangay Clearance</td>
+                    <td th:text="${d.purpose != null ? d.purpose : '-'}">-</td>
+                    <td th:text="${d.dateIssued}">2026-11-06</td>
+                    <td>
+                        <span class="badge bg-success" th:text="${d.status}">Issued</span>
+                    </td>
+                    <td>
+                        <a th:href="@{'/qr/doc/' + ${d.id}}" target="_blank" class="btn btn-sm btn-outline-success">QR</a>
+                    </td>
+                    <td>
+                        <a th:href="@{'/documents/view/' + ${d.id}}" class="btn btn-sm btn-outline-secondary">View</a>
+                        <form th:action="@{'/documents/delete/' + ${d.id}}" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
