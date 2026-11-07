@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resident Verification | E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #eef2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px 10px; }
+        .card-verify { max-width: 440px; margin: 30px auto; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: none; overflow: hidden; background: #fff; }
+        .header-bg { background-color: #14532d; color: white; padding: 25px 20px; text-align: center; }
+        .badge-verified { background-color: #22c55e; color: white; font-size: 0.9rem; font-weight: 600; padding: 6px 16px; border-radius: 20px; display: inline-block; }
+        .label-col { width: 38%; color: #64748b; font-size: 0.9rem; font-weight: 500; }
+        .val-col { color: #1e293b; font-weight: 600; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+<div class="card card-verify" th:if="${r != null}">
+    <div class="header-bg">
+        <h3 class="fw-bold mb-1">E-Barangay</h3>
+        <p class="mb-0 text-white-50 small text-uppercase tracking-wider">Official Resident Verification</p>
+    </div>
+    
+    <div class="card-body p-4">
+        <div class="text-center mb-4">
+            <span class="badge-verified" th:if="${r.status == 'Active'}">✔ Verified Resident</span>
+            <span class="badge bg-secondary" th:unless="${r.status == 'Active'}" th:text="${r.status}">Status</span>
+        </div>
+
+        <table class="table table-sm table-borderless mb-0">
+            <tbody>
+                <tr>
+                    <td class="label-col py-2">Barangay ID:</td>
+                    <td class="val-col py-2 text-primary" th:text="'BRGY-' + ${r.id}">BRGY-00</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Full Name:</td>
+                    <td class="val-col py-2 fs-6 text-dark" th:text="${r.fullname}">Resident Name</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Purok:</td>
+                    <td class="val-col py-2" th:text="${r.purok != null ? r.purok : 'N/A'}">Purok</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Category:</td>
+                    <td class="val-col py-2" th:text="${r.category != null && !r.category.isEmpty() ? r.category : 'General Resident'}">Category</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Contact:</td>
+                    <td class="val-col py-2" th:text="${r.contact != null ? r.contact : 'N/A'}">Contact</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4 pt-3 border-top text-center text-muted small">
+            This digital credential confirms active registration with the Barangay Office.
+        </div>
+    </div>
+</div>
+
+<div class="card card-verify text-center p-5" th:if="${r == null}">
+    <h4 class="text-danger fw-bold">Resident Not Found</h4>
+    <p class="text-muted mt-2">This QR code does not belong to any registered resident.</p>
+</div>
+
+</body>
+</html>
