@@ -105,12 +105,21 @@ public class MainController {
     return "redirect:/residents";
   }
 
+  // WIRED: Pulls all documents & blotters linked by ID or Name
   @GetMapping("/residents/view/{id}") public String viewResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r == null) return "redirect:/residents";
     m.addAttribute("r", r);
-    m.addAttribute("docs", docRepo.findAll().stream().filter(d -> id.equals(d.getResidentId())).toList());
-    m.addAttribute("blotters", blotterRepo.findAll().stream().filter(b -> id.equals(b.getComplainantId())).toList());
+    String fullName = r.getFullname();
+
+    m.addAttribute("docs", docRepo.findAll().stream()
+        .filter(d -> id.equals(d.getResidentId()) || (fullName != null && fullName.equalsIgnoreCase(d.getRequester())))
+        .toList());
+
+    m.addAttribute("blotters", blotterRepo.findAll().stream()
+        .filter(b -> id.equals(b.getComplainantId()) || (fullName != null && fullName.equalsIgnoreCase(b.getComplainant())))
+        .toList());
+
     return "resident-view";
   }
 
@@ -119,7 +128,6 @@ public class MainController {
     return "redirect:/residents";
   }
 
-  // Public Resident verification page
   @GetMapping("/verify/resident/{id}") public String verifyResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     m.addAttribute("r", r);
@@ -149,12 +157,13 @@ public class MainController {
   }
 
   @PostMapping("/documents/add") public String addDoc(
-      @RequestParam String requester,
+      @RequestParam Long residentId,
       @RequestParam String docType,
       @RequestParam(required=false) String purpose,
       @RequestParam(required=false) String validUntil){
     Document d = new Document();
-    d.setRequester(requester);
+    d.setResidentId(residentId);
+    residentRepo.findById(residentId).ifPresent(r -> d.setRequester(r.getFullname()));
     d.setDocType(docType);
     d.setPurpose(purpose);
     d.setValidUntil(validUntil);
@@ -228,13 +237,14 @@ public class MainController {
     }
     list = list.stream().sorted(Comparator.comparing(Blotter::getId).reversed()).toList();
     m.addAttribute("blotters", list);
+    m.addAttribute("residents", residentRepo.findAll());
     m.addAttribute("names", names);
     m.addAttribute("q", q); m.addAttribute("type", type); m.addAttribute("status", status);
     return "blotter";
   }
 
   @PostMapping("/blotter/add") public String addBlotter(
-      @RequestParam String complainant,
+      @RequestParam Long complainantId,
       @RequestParam String respondentName,
       @RequestParam String incidentType,
       @RequestParam(required=false) String details,
@@ -242,7 +252,8 @@ public class MainController {
       @RequestParam(required=false) String incidentPlace,
       @RequestParam(required=false) String witnesses){
     Blotter b = new Blotter();
-    b.setComplainant(complainant);
+    b.setComplainantId(complainantId);
+    residentRepo.findById(complainantId).ifPresent(r -> b.setComplainant(r.getFullname()));
     b.setRespondentName(respondentName);
     b.setIncidentType(incidentType); // Complain
     b.setDetails(details);
