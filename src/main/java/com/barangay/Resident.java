@@ -1,6 +1,8 @@
 package com.barangay;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "residents")
@@ -47,13 +49,24 @@ public class Resident {
   public String getFullname() { 
     if (fullname != null && !fullname.isBlank()) return fullname;
     StringBuilder sb = new StringBuilder();
-    if (firstName != null) sb.append(firstName).append(" ");
-    if (middleName != null && !middleName.isBlank()) sb.append(middleName).append(" ");
-    if (lastName != null) sb.append(lastName);
-    if (extension != null && !extension.isBlank()) sb.append(" ").append(extension);
+    if (firstName != null && !firstName.isBlank()) sb.append(firstName.trim()).append(" ");
+    if (middleName != null && !middleName.isBlank()) sb.append(middleName.trim()).append(" ");
+    if (lastName != null && !lastName.isBlank()) sb.append(lastName.trim());
+    if (extension != null && !extension.isBlank()) sb.append(" ").append(extension.trim());
     return sb.toString().trim();
   }
   public void setFullname(String fullname) { this.fullname = fullname; }
+
+  // Calculates age dynamically from birthdate for the View page
+  public Integer getAge() {
+    if (birthdate == null || birthdate.isBlank()) return null;
+    try {
+      LocalDate bd = LocalDate.parse(birthdate.trim());
+      return Period.between(bd, LocalDate.now()).getYears();
+    } catch (Exception e) {
+      return null;
+    }
+  }
 
   public String getPurok() { return purok; }
   public void setPurok(String purok) { this.purok = purok; }
