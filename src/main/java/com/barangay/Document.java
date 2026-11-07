@@ -13,8 +13,7 @@ public class Document {
   private String docType;
   private String purpose;
   private String validUntil;
-  private String orNumber;
-  private String amountPaid;
+  private String contactNum
   private String dateIssued;
   private String status;
   private String controlNo;
@@ -39,12 +38,9 @@ public class Document {
   public String getValidUntil() { return validUntil; }
   public void setValidUntil(String validUntil) { this.validUntil = validUntil; }
 
-  public String getOrNumber() { return orNumber; }
-  public void setOrNumber(String orNumber) { this.orNumber = orNumber; }
-
-  public String getAmountPaid() { return amountPaid; }
-  public void setAmountPaid(String amountPaid) { this.amountPaid = amountPaid; }
-
+  public String getContactNum() { return contactNum; }
+  public void setContactNum(String contactNum;) { this.contactNum = contactNum; }
+  
   public String getDateIssued() { return dateIssued; }
   public void setDateIssued(String dateIssued) { this.dateIssued = dateIssued; }
 
