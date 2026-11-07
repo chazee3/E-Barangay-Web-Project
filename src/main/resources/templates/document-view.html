@@ -1,18 +1,96 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Certificate</title>
-<style>body{font-family:Georgia,serif;padding:20px} .bar{font-family:'Segoe UI',system-ui,sans-serif;margin-bottom:18px;display:flex;gap:10px;align-items:center} .bar a,.bar button{background:#2d6a4f;color:#fff;border:none;border-radius:8px;padding:9px 18px;font:600 15px 'Segoe UI',system-ui,sans-serif;text-decoration:none;cursor:pointer;transition:background .2s,transform .15s} .bar a:hover,.bar button:hover{background:#1b4332;transform:translateY(-1px)} .cert{position:relative;max-width:700px;margin:auto;border:3px double #2d6a4f;padding:40px} .cert h1{text-align:center;color:#1b4332;margin:0} .cert h2{text-align:center;margin:6px 0 24px;text-transform:uppercase;letter-spacing:1px} .cert p{line-height:1.8;text-align:justify} .foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;font-size:14px} .sig{text-align:center;border-top:1px solid #000;padding-top:4px;min-width:200px} .stamp{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%) rotate(-20deg);font-size:80px;font-weight:bold;color:rgba(192,57,43,.35);border:8px solid rgba(192,57,43,.35);padding:0 24px;letter-spacing:6px;pointer-events:none} @media print{.bar{display:none} body{padding:0}}</style>
-</head><body>
-<div class="bar"><a href="/documents">&larr; Back</a><button onclick="window.print()">Print</button></div>
-<div class="cert">
-<div class="stamp" th:if="${d.displayStatus == 'Expired'}">EXPIRED</div>
-<h1>BARANGAY CERTIFICATION</h1>
-<h2 th:text="${d.docType}"></h2>
-<p>TO WHOM IT MAY CONCERN:</p>
-<p>This is to certify that <b th:text="${resident != null ? resident.fullname : 'Unknown'}"></b><span th:if="${resident != null and resident.age != null}">, <span th:text="${resident.age}"></span> years old</span>, is a resident of <span th:text="${resident != null and resident.address != null and resident.address != '' ? resident.address : 'this barangay'}"></span><span th:if="${resident != null and resident.purok != null and resident.purok != '' and (resident.address == null or !#strings.containsIgnoreCase(resident.address, resident.purok))}">, <span th:text="${resident.purok}"></span></span>.</p>
-<p>This certification is issued upon request for <b th:text="${d.purpose != null and d.purpose != '' ? d.purpose : 'whatever legal purpose it may serve'}"></b>.</p>
-<p>Issued on <span th:text="${d.dateIssued}"></span><span th:if="${d.validUntil != null and d.validUntil != ''}">, valid until <span th:text="${d.validUntil}"></span></span>.</p>
-<div class="foot">
-<div><img th:src="@{/qr/doc/{id}(id=${d.id})}" width="110" height="110" alt="QR"><br>Control No.: <span th:text="${d.controlNo}"></span><br>OR No.: <span th:text="${d.orNumber}"></span></div>
-<div class="sig">Barangay Captain</div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Certificate Preview - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f3f4f6; }
+        .certificate-sheet {
+            max-width: 800px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 50px 60px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 2px solid #14532d;
+            position: relative;
+        }
+        .cert-header { text-align: center; border-bottom: 2px solid #14532d; padding-bottom: 20px; margin-bottom: 30px; }
+        .cert-title { font-size: 26px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #14532d; margin-top: 15px; }
+        .cert-body { font-size: 17px; line-height: 1.8; color: #1f2937; text-align: justify; }
+        .signature-block { margin-top: 50px; }
+
+        /* Hide buttons and topbar during physical paper print */
+        @media print {
+            body { background: white; padding: 0; }
+            .no-print { display: none !important; }
+            .certificate-sheet { box-shadow: none; border: none; margin: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Action Bar (Hidden when printed) -->
+<div class="container my-3 no-print">
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="/documents" class="btn btn-outline-secondary btn-sm">&larr; Back to Documents</a>
+        <div>
+            <button onclick="window.print()" class="btn btn-success btn-sm px-3">🖨️ Print Certificate</button>
+            <a th:href="@{'/documents/edit/' + ${d.id}}" class="btn btn-primary btn-sm ms-1">Edit</a>
+        </div>
+    </div>
 </div>
+
+<!-- Printable Certificate Layout -->
+<div class="certificate-sheet">
+    <div class="cert-header">
+        <p class="mb-0 text-muted small text-uppercase">Republic of the Philippines</p>
+        <p class="mb-0 fw-bold">Province of South Cotabato</p>
+        <p class="mb-0 fw-bold">City of General Santos</p>
+        <h4 class="fw-bold text-success mt-1 mb-0">OFFICE OF THE PUNONG BARANGAY</h4>
+        <div class="cert-title" th:text="${d.docType}">BARANGAY CLEARANCE</div>
+    </div>
+
+    <div class="cert-body">
+        <p><strong>TO WHOM IT MAY CONCERN:</strong></p>
+        <p>
+            This is to certify that <strong class="text-decoration-underline" th:text="${requesterName}">RESIDENT NAME</strong>, 
+            a bonafide resident of this Barangay, has requested this 
+            <strong th:text="${d.docType}">Document</strong> for the purpose of:
+        </p>
+        
+        <p class="text-center fw-bold fs-5 my-4 text-success" th:text="${d.purpose != null && !d.purpose.isEmpty() ? d.purpose : 'General Requirement'}">
+            Employment / Local Requirement
+        </p>
+
+        <p>
+            Based on records filed in this office, the aforementioned individual has good moral character, 
+            is a law-abiding citizen, and has no derogatory record pending in this barangay.
+        </p>
+        
+        <p>
+            Issued this <strong th:text="${d.dateIssued}">2026-11-08</strong> at the Barangay Hall.
+        </p>
+    </div>
+
+    <!-- Bottom Section: Official Signature and Anti-Fraud QR Code -->
+    <div class="row align-items-end signature-block">
+        <div class="col-6 text-center">
+            <!-- Dynamic QR Code embedded directly on the certificate! -->
+            <img th:src="@{'/qr/doc/' + ${d.id}}" alt="Anti-fraud QR" width="120" height="120" class="border p-1">
+            <p class="text-muted small mt-1 mb-0" style="font-size: 0.75rem;">Scan to verify digital authenticity</p>
+            <p class="fw-bold mb-0 text-muted" style="font-size: 0.75rem;" th:text="'Doc Ref #' + ${d.id}"></p>
+        </div>
+
+        <div class="col-6 text-center">
+            <div style="border-bottom: 1px solid #000; width: 80%; margin: 0 auto 5px;"></div>
+            <strong class="d-block">HON. PUNONG BARANGAY</strong>
+            <small class="text-muted">Barangay Captain</small>
+        </div>
+    </div>
 </div>
-</body></html>
+
+</body>
+</html>
