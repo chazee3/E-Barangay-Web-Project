@@ -13,7 +13,7 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar with Logout -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
@@ -28,7 +28,7 @@
 <div class="container my-4">
     <h3 class="fw-bold mb-4">Document Issuance</h3>
 
-    <!-- ADD DOCUMENT FORM (WIRED TO RESIDENT DATABASE) -->
+    <!-- ADD DOCUMENT FORM -->
     <div class="card p-3 mb-4 shadow-sm border-0">
         <form th:action="@{/documents/add}" method="post">
             <div class="row g-2 mb-3">
@@ -62,7 +62,7 @@
         </form>
     </div>
 
-    <!-- DOCUMENTS TABLE -->
+    <!-- DOCUMENTS TABLE (NO QR COLUMN) -->
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
             <thead class="table-custom">
@@ -73,7 +73,6 @@
                     <th>Purpose</th>
                     <th>Date Issued</th>
                     <th>Status</th>
-                    <th>QR</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -86,9 +85,6 @@
                     <td th:text="${d.dateIssued}">2026-11-06</td>
                     <td>
                         <span class="badge bg-success" th:text="${d.status}">Issued</span>
-                    </td>
-                    <td>
-                        <a th:href="@{'/qr/doc/' + ${d.id}}" target="_blank" class="btn btn-sm btn-outline-success">QR</a>
                     </td>
                     <td>
                         <a th:href="@{'/documents/view/' + ${d.id}}" class="btn btn-sm btn-outline-secondary">View</a>
