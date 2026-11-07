@@ -13,7 +13,7 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar -->
+<!-- Navbar with Logout -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
@@ -92,6 +92,7 @@
                     </td>
                     <td>
                         <a th:href="@{'/documents/view/' + ${d.id}}" class="btn btn-sm btn-outline-secondary">View</a>
+                        <a th:href="@{'/documents/edit/' + ${d.id}}" class="btn btn-sm btn-outline-primary">Edit</a>
                         <form th:action="@{'/documents/delete/' + ${d.id}}" method="post" class="d-inline" onsubmit="return confirm('Delete this record?');">
                             <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                         </form>
