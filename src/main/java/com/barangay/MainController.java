@@ -1,4 +1,5 @@
 package com.barangay;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -91,6 +92,13 @@ public class MainController {
     residentRepo.deleteById(id); return "redirect:/residents";
   }
 
+  // Public Resident verification page (opened when scanning a Resident QR code)
+  @GetMapping("/verify/resident/{id}") public String verifyResident(@PathVariable Long id, Model m){
+    Resident r = residentRepo.findById(id).orElse(null);
+    m.addAttribute("r", r);
+    return "resident-verify";
+  }
+
   // ---------- DOCUMENTS ----------
   @GetMapping("/documents") public String documents(@RequestParam(required=false) String q, @RequestParam(required=false) String type, @RequestParam(required=false) String status, Model m){
     Map<Long,String> names = nameMap();
@@ -151,7 +159,7 @@ public class MainController {
     docRepo.deleteById(id); return "redirect:/documents";
   }
 
-  // Public verification page (opened by scanning the QR on a certificate)
+  // Public Document verification page (opened by scanning the QR on a certificate)
   @GetMapping("/verify/{id}") public String verifyDoc(@PathVariable Long id, Model m){
     Document d = docRepo.findById(id).orElse(null);
     m.addAttribute("d", d);
@@ -224,10 +232,29 @@ public class MainController {
     blotterRepo.deleteById(id); return "redirect:/blotter";
   }
 
-  // ---------- QR ----------
-  @GetMapping(value="/qr/{text}", produces="image/png") @ResponseBody
-  public byte[] qr(@PathVariable String text) throws Exception { return QRUtil.generate(text); }
+  // ---------- QR GENERATORS ----------
 
+  // Smart endpoint: if text is "BRGY-2", it auto-resolves to https://your-domain/verify/resident/2
+  @GetMapping(value="/qr/{text}", produces="image/png") @ResponseBody
+  public byte[] qr(@PathVariable String text) throws Exception {
+    if (text != null && text.startsWith("BRGY-")) {
+      try {
+        String cleanId = text.substring(5).trim();
+        String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/verify/resident/" + cleanId).toUriString();
+        return QRUtil.generate(url);
+      } catch (Exception ignored) {}
+    }
+    return QRUtil.generate(text);
+  }
+
+  // Dedicated resident QR generator
+  @GetMapping(value="/qr/resident/{id}", produces="image/png") @ResponseBody
+  public byte[] residentQr(@PathVariable Long id) throws Exception {
+    String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/verify/resident/" + id).toUriString();
+    return QRUtil.generate(url);
+  }
+
+  // Document QR generator
   @GetMapping(value="/qr/doc/{id}", produces="image/png") @ResponseBody
   public byte[] docQr(@PathVariable Long id) throws Exception {
     String url = ServletUriComponentsBuilder.fromCurrentContextPath().path("/verify/" + id).toUriString();
