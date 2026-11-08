@@ -14,7 +14,7 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar with Logout -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
@@ -74,38 +74,51 @@
     <div class="table-responsive mb-4">
         <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
             <thead class="table-custom">
-                <tr><th>ID</th><th>Type</th><th>Purpose</th><th>Date Issued</th></tr>
+                <tr><th>ID</th><th>Document Type</th><th>Purpose</th><th>Date Issued</th><th>Status</th></tr>
             </thead>
             <tbody>
                 <tr th:each="d : ${docs}">
                     <td th:text="${d.id}"></td>
-                    <td th:text="${d.docType}"></td>
-                    <td th:text="${d.purpose}"></td>
+                    <td class="fw-bold" th:text="${d.docType}"></td>
+                    <td th:text="${d.purpose != null ? d.purpose : '-'}"></td>
                     <td th:text="${d.dateIssued}"></td>
+                    <td>
+                        <span th:if="${d.status == 'Released'}" class="badge bg-success">Released</span>
+                        <span th:if="${d.status == 'Issued'}" class="badge bg-primary">Issued</span>
+                        <span th:if="${d.status == 'Pending'}" class="badge bg-warning text-dark">Pending</span>
+                        <span th:if="${d.status == 'Expired'}" class="badge bg-danger">Expired</span>
+                        <span th:unless="${d.status == 'Released' or d.status == 'Issued' or d.status == 'Pending' or d.status == 'Expired'}" class="badge bg-secondary" th:text="${d.status}">Status</span>
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(docs)}">
-                    <td colspan="4" class="text-center text-muted py-2">No documents issued yet.</td>
+                    <td colspan="5" class="text-center text-muted py-2">No documents issued yet.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <!-- Blotter Records -->
-    <h5 class="fw-bold text-dark mb-2">Blotter Records (As Complainant)</h5>
+    <h5 class="fw-bold text-dark mb-2">Barangay Blotter Records (As Complainant)</h5>
     <div class="table-responsive">
         <table class="table table-hover table-bordered align-middle shadow-sm bg-white">
             <thead class="table-custom">
-                <tr><th>Case No.</th><th>Respondent</th><th>Complain</th><th>Date Filed</th></tr>
+                <tr><th>Case No.</th><th>Respondent</th><th>Complain</th><th>Date Filed</th><th>Status</th></tr>
             </thead>
             <tbody>
                 <tr th:each="b : ${blotters}">
-                    <td th:text="${b.caseNo != null ? b.caseNo : 'BLT-' + b.id}"></td>
+                    <td class="fw-bold" th:text="${b.caseNo != null ? b.caseNo : 'BLT-' + b.id}"></td>
                     <td th:text="${b.respondentName}"></td>
                     <td th:text="${b.incidentType}"></td>
                     <td th:text="${b.dateFiled}"></td>
+                    <td>
+                        <span class="badge bg-warning text-dark" th:if="${b.status == 'Pending'}">Pending</span>
+                        <span class="badge bg-success" th:if="${b.status == 'Settled'}">Settled</span>
+                        <span class="badge bg-danger" th:if="${b.status == 'Escalated'}">Escalated</span>
+                        <span class="badge bg-secondary" th:if="${b.status == 'Dismissed'}">Dismissed</span>
+                    </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(blotters)}">
-                    <td colspan="4" class="text-center text-muted py-2">No blotter records found.</td>
+                    <td colspan="5" class="text-center text-muted py-2">No blotter records found.</td>
                 </tr>
             </tbody>
         </table>
