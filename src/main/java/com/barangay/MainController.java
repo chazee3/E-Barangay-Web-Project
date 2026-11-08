@@ -105,18 +105,19 @@ public class MainController {
     return "redirect:/residents";
   }
 
+  // WIRED: Pulls records by both ID and Name match (case-insensitive)
   @GetMapping("/residents/view/{id}") public String viewResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r == null) return "redirect:/residents";
     m.addAttribute("r", r);
-    String fullName = r.getFullname();
+    String fullName = r.getFullname() != null ? r.getFullname().trim() : "";
 
     m.addAttribute("docs", docRepo.findAll().stream()
-        .filter(d -> id.equals(d.getResidentId()) || (fullName != null && fullName.equalsIgnoreCase(d.getRequester())))
+        .filter(d -> id.equals(d.getResidentId()) || (!fullName.isEmpty() && d.getRequester() != null && fullName.equalsIgnoreCase(d.getRequester().trim())))
         .toList());
 
     m.addAttribute("blotters", blotterRepo.findAll().stream()
-        .filter(b -> id.equals(b.getComplainantId()) || (fullName != null && fullName.equalsIgnoreCase(b.getComplainant())))
+        .filter(b -> id.equals(b.getComplainantId()) || (!fullName.isEmpty() && b.getComplainant() != null && fullName.equalsIgnoreCase(b.getComplainant().trim())))
         .toList());
 
     return "resident-view";
@@ -155,20 +156,28 @@ public class MainController {
     return "documents";
   }
 
+  // ADD DOCUMENT: Accepts Requester as a textfield & auto-links to resident if exists
   @PostMapping("/documents/add") public String addDoc(
-      @RequestParam Long residentId,
+      @RequestParam String requester,
       @RequestParam(required=false) String contact,
       @RequestParam String docType,
       @RequestParam(required=false) String purpose,
       @RequestParam(required=false) String validUntil){
     Document d = new Document();
-    d.setResidentId(residentId);
-    residentRepo.findById(residentId).ifPresent(r -> {
-      d.setRequester(r.getFullname());
-      if (contact == null || contact.isBlank()) {
-        d.setContact(r.getContact());
-      }
-    });
+    String cleanRequester = requester.trim();
+    d.setRequester(cleanRequester);
+
+    // If the typed name matches a registered resident, link their residentId
+    residentRepo.findAll().stream()
+        .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(cleanRequester))
+        .findFirst()
+        .ifPresent(r -> {
+          d.setResidentId(r.getId());
+          if (contact == null || contact.isBlank()) {
+            d.setContact(r.getContact());
+          }
+        });
+
     if (contact != null && !contact.isBlank()) {
       d.setContact(contact);
     }
@@ -205,7 +214,13 @@ public class MainController {
       @RequestParam(required=false) String validUntil){
     Document d = docRepo.findById(id).orElse(null);
     if(d != null){
-      if(requester != null && !requester.isBlank()) d.setRequester(requester);
+      if(requester != null && !requester.isBlank()) {
+        d.setRequester(requester.trim());
+        residentRepo.findAll().stream()
+            .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(requester.trim()))
+            .findFirst()
+            .ifPresent(r -> d.setResidentId(r.getId()));
+      }
       if(contact != null) d.setContact(contact);
       d.setDocType(docType); d.setPurpose(purpose); d.setStatus(status);
       d.setValidUntil(validUntil);
@@ -252,8 +267,9 @@ public class MainController {
     return "blotter";
   }
 
+  // ADD BLOTTER: Accepts Complainant as a textfield & auto-links to resident if exists
   @PostMapping("/blotter/add") public String addBlotter(
-      @RequestParam Long complainantId,
+      @RequestParam String complainant,
       @RequestParam(required=false) String contact,
       @RequestParam String respondentName,
       @RequestParam String incidentType,
@@ -263,13 +279,20 @@ public class MainController {
       @RequestParam(required=false) String witnesses,
       @RequestParam(required=false) String hearingDate){
     Blotter b = new Blotter();
-    b.setComplainantId(complainantId);
-    residentRepo.findById(complainantId).ifPresent(r -> {
-      b.setComplainant(r.getFullname());
-      if (contact == null || contact.isBlank()) {
-        b.setContact(r.getContact());
-      }
-    });
+    String cleanComplainant = complainant.trim();
+    b.setComplainant(cleanComplainant);
+
+    // If the typed name matches a registered resident, link their complainantId
+    residentRepo.findAll().stream()
+        .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(cleanComplainant))
+        .findFirst()
+        .ifPresent(r -> {
+          b.setComplainantId(r.getId());
+          if (contact == null || contact.isBlank()) {
+            b.setContact(r.getContact());
+          }
+        });
+
     if (contact != null && !contact.isBlank()) {
       b.setContact(contact);
     }
@@ -321,7 +344,13 @@ public class MainController {
       @RequestParam(required=false) String hearingDate){
     Blotter b = blotterRepo.findById(id).orElse(null);
     if(b != null){
-      if(complainant != null && !complainant.isBlank()) b.setComplainant(complainant);
+      if(complainant != null && !complainant.isBlank()) {
+        b.setComplainant(complainant.trim());
+        residentRepo.findAll().stream()
+            .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(complainant.trim()))
+            .findFirst()
+            .ifPresent(r -> b.setComplainantId(r.getId()));
+      }
       if(contact != null) b.setContact(contact);
       b.setRespondentName(respondentName); 
       b.setIncidentType(incidentType); 
