@@ -1,19 +1,124 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Resident</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
-<a href="/residents">&larr; Back</a><h2>Edit Resident</h2>
-<form th:action="@{/residents/update/{id}(id=${r.id})}" method="post">
-<label>Full name</label><input name="fullname" th:value="${r.fullname}" required>
-<label>Purok</label><input name="purok" th:value="${r.purok}">
-<label>Contact</label><input name="contact" th:value="${r.contact}">
-<label>Birthdate</label><input name="birthdate" type="date" min="1900-01-01" max="2100-12-31" th:value="${r.birthdate}">
-<label>Address</label><input name="address" th:value="${r.address}">
-<label>Sex</label><select name="sex"><option value="">-</option><option th:selected="${r.sex == 'Male'}">Male</option><option th:selected="${r.sex == 'Female'}">Female</option></select>
-<label>Civil status</label><select name="civilStatus"><option value="">-</option><option th:selected="${r.civilStatus == 'Single'}">Single</option><option th:selected="${r.civilStatus == 'Married'}">Married</option><option th:selected="${r.civilStatus == 'Widowed'}">Widowed</option><option th:selected="${r.civilStatus == 'Separated'}">Separated</option></select>
-<label>Category</label><select name="category"><option value="">None</option><option th:selected="${r.category == 'Senior Citizen'}">Senior Citizen</option><option th:selected="${r.category == 'PWD'}">PWD</option><option th:selected="${r.category == 'Solo Parent'}">Solo Parent</option><option th:selected="${r.category == '4Ps'}">4Ps</option></select>
-<label>Disability type (if PWD)</label><select name="disabilityType"><option value="">-</option><option th:selected="${r.disabilityType == 'Visual'}">Visual</option><option th:selected="${r.disabilityType == 'Hearing'}">Hearing</option><option th:selected="${r.disabilityType == 'Speech'}">Speech</option><option th:selected="${r.disabilityType == 'Physical'}">Physical</option><option th:selected="${r.disabilityType == 'Intellectual'}">Intellectual</option><option th:selected="${r.disabilityType == 'Psychosocial'}">Psychosocial</option><option th:selected="${r.disabilityType == 'Learning'}">Learning</option><option th:selected="${r.disabilityType == 'Chronic illness'}">Chronic illness</option><option th:selected="${r.disabilityType == 'Others'}">Others</option></select>
-<label>PWD ID number</label><input name="pwdIdNumber" th:value="${r.pwdIdNumber}">
-<label>Status</label><select name="status"><option th:selected="${r.status == 'Active'}">Active</option><option th:selected="${r.status == 'Transferred'}">Transferred</option><option th:selected="${r.status == 'Deceased'}">Deceased</option></select>
-<label>Occupation</label><input name="occupation" th:value="${r.occupation}">
-<button type="submit">Save</button>
-</form></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Resident - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link active" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Barangay Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-success mb-0" th:text="'Edit Resident: ' + ${r.fullname}">Edit Resident</h3>
+        <a href="/residents" class="btn btn-outline-secondary btn-sm">&larr; Back to Residents</a>
+    </div>
+
+    <div class="card p-4 shadow-sm border-0 bg-white">
+        <form th:action="@{'/residents/update/' + ${r.id}}" method="post">
+            <h5 class="fw-bold text-dark mb-3">Personal Information</h5>
+            
+            <div class="row g-3 mb-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">First Name *</label>
+                    <input type="text" name="firstName" th:value="${r.firstName != null ? r.firstName : r.fullname}" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">Middle Name</label>
+                    <input type="text" name="middleName" th:value="${r.middleName}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">Last Name *</label>
+                    <input type="text" name="lastName" th:value="${r.lastName != null ? r.lastName : ''}" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">Extension</label>
+                    <input type="text" name="extension" th:value="${r.extension}" class="form-control" placeholder="Jr., Sr., III">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Address</label>
+                    <input type="text" name="address" th:value="${r.address}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">Contact Number</label>
+                    <input type="text" name="contact" th:value="${r.contact}" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold text-muted">Birthdate</label>
+                    <input type="date" name="birthdate" th:value="${r.birthdate}" class="form-control">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Sex</label>
+                    <select name="sex" class="form-select">
+                        <option value="Male" th:selected="${r.sex == 'Male'}">Male</option>
+                        <option value="Female" th:selected="${r.sex == 'Female'}">Female</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Civil Status</label>
+                    <select name="civilStatus" class="form-select">
+                        <option value="Single" th:selected="${r.civilStatus == 'Single'}">Single</option>
+                        <option value="Married" th:selected="${r.civilStatus == 'Married'}">Married</option>
+                        <option value="Widowed" th:selected="${r.civilStatus == 'Widowed'}">Widowed</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="" th:selected="${r.category == null or r.category == ''}">Regular</option>
+                        <option value="PWD" th:selected="${r.category == 'PWD'}">PWD</option>
+                        <option value="Senior Citizen" th:selected="${r.category == 'Senior Citizen'}">Senior Citizen</option>
+                        <option value="Solo Parent" th:selected="${r.category == 'Solo Parent'}">Solo Parent</option>
+                        <option value="Youth" th:selected="${r.category == 'Youth'}">Youth</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Disability (if PWD)</label>
+                    <input type="text" name="disabilityType" th:value="${r.disabilityType}" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Occupation</label>
+                    <input type="text" name="occupation" th:value="${r.occupation}" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold text-muted">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Active" th:selected="${r.status == 'Active'}">Active</option>
+                        <option value="Inactive" th:selected="${r.status == 'Inactive'}">Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-custom px-4">Save Changes</button>
+                <a href="/residents" class="btn btn-outline-secondary px-3">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
