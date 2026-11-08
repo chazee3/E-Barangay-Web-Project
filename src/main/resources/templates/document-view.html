@@ -22,7 +22,6 @@
         .cert-body { font-size: 17px; line-height: 1.8; color: #1f2937; text-align: justify; }
         .signature-block { margin-top: 50px; }
 
-        /* Hide buttons and topbar during physical paper print */
         @media print {
             body { background: white; padding: 0; }
             .no-print { display: none !important; }
@@ -78,7 +77,7 @@
     <!-- Bottom Section: Official Signature and Anti-Fraud QR Code -->
     <div class="row align-items-end signature-block">
         <div class="col-6 text-center">
-            <!-- Dynamic QR Code embedded directly on the certificate! -->
+            <!-- Dynamic QR Code embedded directly on the physical printout! -->
             <img th:src="@{'/qr/doc/' + ${d.id}}" alt="Anti-fraud QR" width="120" height="120" class="border p-1">
             <p class="text-muted small mt-1 mb-0" style="font-size: 0.75rem;">Scan to verify digital authenticity</p>
             <p class="fw-bold mb-0 text-muted" style="font-size: 0.75rem;" th:text="'Doc Ref #' + ${d.id}"></p>
