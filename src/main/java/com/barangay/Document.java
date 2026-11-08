@@ -9,11 +9,13 @@ public class Document {
   private Long id;
 
   private Long residentId;
-  private String requester; // Textfield for requester
+  private String requester;
+  private String contact; // Added contact
   private String docType;
   private String purpose;
   private String validUntil;
-  private String contactNum
+  private String orNumber;
+  private String amountPaid;
   private String dateIssued;
   private String status;
   private String controlNo;
@@ -29,6 +31,9 @@ public class Document {
   public String getRequester() { return requester; }
   public void setRequester(String requester) { this.requester = requester; }
 
+  public String getContact() { return contact; }
+  public void setContact(String contact) { this.contact = contact; }
+
   public String getDocType() { return docType; }
   public void setDocType(String docType) { this.docType = docType; }
 
@@ -38,9 +43,12 @@ public class Document {
   public String getValidUntil() { return validUntil; }
   public void setValidUntil(String validUntil) { this.validUntil = validUntil; }
 
-  public String getContactNum() { return contactNum; }
-  public void setContactNum(String contactNum;) { this.contactNum = contactNum; }
-  
+  public String getOrNumber() { return orNumber; }
+  public void setOrNumber(String orNumber) { this.orNumber = orNumber; }
+
+  public String getAmountPaid() { return amountPaid; }
+  public void setAmountPaid(String amountPaid) { this.amountPaid = amountPaid; }
+
   public String getDateIssued() { return dateIssued; }
   public void setDateIssued(String dateIssued) { this.dateIssued = dateIssued; }
 
