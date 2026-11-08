@@ -1,14 +1,94 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Edit Document</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a></nav>
-<a href="/documents">&larr; Back</a><h2>Edit Document</h2>
-<p class="muted">Resident: <b th:text="${residentName}"></b> | Control No.: <b th:text="${d.controlNo}"></b></p>
-<form th:action="@{/documents/update/{id}(id=${d.id})}" method="post">
-<label>Document type</label><select name="docType"><option th:selected="${d.docType == 'Barangay Clearance'}">Barangay Clearance</option><option th:selected="${d.docType == 'Indigency'}">Indigency</option><option th:selected="${d.docType == 'Residency'}">Residency</option><option th:selected="${d.docType == 'Good Moral'}">Good Moral</option><option th:selected="${d.docType == 'Business Clearance'}">Business Clearance</option></select>
-<label>Purpose</label><input name="purpose" th:value="${d.purpose}">
-<label>Status</label><select name="status"><option th:selected="${d.status == 'Issued'}">Issued</option><option th:selected="${d.status == 'Released'}">Released</option><option th:selected="${d.status == 'Expired'}">Expired</option></select>
-<label>Valid until</label><input name="validUntil" type="date" min="2020-01-01" max="2100-12-31" th:value="${d.validUntil}">
-<label>OR number</label><input name="orNumber" th:value="${d.orNumber}">
-<label>Amount paid</label><input name="amountPaid" th:value="${d.amountPaid}">
-<button type="submit">Save</button>
-</form></body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Edit Document - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .btn-custom { background-color: #15803d; color: white; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link" href="/">Dashboard</a>
+        <a class="nav-link" href="/residents">Residents</a>
+        <a class="nav-link active" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Barangay Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold text-success mb-0" th:text="'Edit Document #' + ${d.id}">Edit Document</h3>
+        <a href="/documents" class="btn btn-outline-secondary btn-sm">&larr; Back to Documents</a>
+    </div>
+
+    <div class="card p-4 shadow-sm border-0 bg-white">
+        <form th:action="@{'/documents/update/' + ${d.id}}" method="post">
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Requester Name *</label>
+                    <input list="residentList" type="text" name="requester" th:value="${requesterName}" class="form-control" required autocomplete="off">
+                    <datalist id="residentList">
+                        <option th:each="res : ${residents}" th:value="${res.fullname}"></option>
+                    </datalist>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Contact Number</label>
+                    <input type="text" name="contact" th:value="${d.contact}" class="form-control">
+                </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Document Type *</label>
+                    <select name="docType" class="form-select" required>
+                        <option value="Barangay Clearance" th:selected="${d.docType == 'Barangay Clearance'}">Barangay Clearance</option>
+                        <option value="Sedula" th:selected="${d.docType == 'Sedula'}">Sedula</option>
+                        <option value="Purok Clearance" th:selected="${d.docType == 'Purok Clearance'}">Purok Clearance</option>
+                        <option value="Purok Certification" th:selected="${d.docType == 'Purok Certification'}">Purok Certification</option>
+                        <option value="Low Income Certificate" th:selected="${d.docType == 'Low Income Certificate'}">Low Income Certificate</option>
+                        <option value="Others" th:selected="${d.docType == 'Others'}">Others</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Valid Until</label>
+                    <input type="date" name="validUntil" th:value="${d.validUntil}" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold text-muted">Purpose</label>
+                <input type="text" name="purpose" th:value="${d.purpose}" class="form-control">
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Status</label>
+                    <select name="status" class="form-select">
+                        <option value="Issued" th:selected="${d.status == 'Issued'}">Issued</option>
+                        <option value="Released" th:selected="${d.status == 'Released'}">Released</option>
+                        <option value="Pending" th:selected="${d.status == 'Pending'}">Pending</option>
+                        <option value="Expired" th:selected="${d.status == 'Expired'}">Expired</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-custom px-4">Save Changes</button>
+                <a href="/documents" class="btn btn-outline-secondary px-3">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
