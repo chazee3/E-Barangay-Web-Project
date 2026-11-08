@@ -31,12 +31,15 @@
     <!-- ADD DOCUMENT FORM -->
     <div class="card p-3 mb-4 shadow-sm border-0">
         <form th:action="@{/documents/add}" method="post">
-            <div class="row g-2 mb-3">
+            <div class="row g-2 mb-2">
                 <div class="col-md-4">
                     <select name="residentId" class="form-select" required>
                         <option value="">Select Resident (Requester) *</option>
                         <option th:each="res : ${residents}" th:value="${res.id}" th:text="${res.fullname} + ' (ID: ' + ${res.id} + ')'"></option>
                     </select>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="contact" class="form-control" placeholder="Contact No. (optional)">
                 </div>
                 <div class="col-md-4">
                     <select name="docType" class="form-select" required>
@@ -49,13 +52,15 @@
                         <option value="Others">Others</option>
                     </select>
                 </div>
+            </div>
+
+            <div class="row g-2 mb-3">
+                <div class="col-md-8">
+                    <input type="text" name="purpose" class="form-control" placeholder="Purpose (e.g. Employment, Scholarship, Local requirement)">
+                </div>
                 <div class="col-md-4">
                     <input type="date" name="validUntil" class="form-control" placeholder="Valid Until">
                 </div>
-            </div>
-
-            <div class="mb-3">
-                <input type="text" name="purpose" class="form-control" placeholder="Purpose (e.g. Employment, Scholarship, Local requirement)">
             </div>
 
             <button type="submit" class="btn btn-custom px-4">Issue Document</button>
@@ -83,7 +88,6 @@
                     <td th:text="${d.docType}">Barangay Clearance</td>
                     <td th:text="${d.purpose != null ? d.purpose : '-'}">-</td>
                     <td th:text="${d.dateIssued}">2026-11-06</td>
-                    <!-- Color-Coded Status Badge -->
                     <td>
                         <span th:if="${d.status == 'Released'}" class="badge bg-success">Released</span>
                         <span th:if="${d.status == 'Issued'}" class="badge bg-primary">Issued</span>
