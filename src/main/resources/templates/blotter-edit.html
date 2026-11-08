@@ -13,7 +13,7 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar with Logout -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
@@ -38,32 +38,46 @@
         <form th:action="@{'/blotter/update/' + ${b.id}}" method="post">
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted">Complainant Name</label>
-                    <input type="text" name="complainant" th:value="${complainant}" class="form-control" required>
+                    <label class="form-label fw-semibold text-muted">Complainant Name *</label>
+                    <input list="complainantList" type="text" name="complainant" th:value="${complainant}" class="form-control" required autocomplete="off">
+                    <datalist id="complainantList">
+                        <option th:each="res : ${residents}" th:value="${res.fullname}"></option>
+                    </datalist>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted">Respondent Name</label>
-                    <input type="text" name="respondentName" th:value="${b.respondentName}" class="form-control" required>
+                    <label class="form-label fw-semibold text-muted">Complainant Contact</label>
+                    <input type="text" name="contact" th:value="${b.contact}" class="form-control">
                 </div>
             </div>
 
             <div class="row g-3 mb-3">
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-muted">Complain / Incident</label>
-                    <input list="complainOptions" name="incidentType" th:value="${b.incidentType}" class="form-control" placeholder="e.g. Physical Injury, Utang" required>
+                    <label class="form-label fw-semibold text-muted">Respondent Name *</label>
+                    <input type="text" name="respondentName" th:value="${b.respondentName}" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Complain / Incident *</label>
+                    <input list="complainOptions" name="incidentType" th:value="${b.incidentType}" class="form-control" placeholder="e.g. Away Kapitbahay, Utang" required>
                     <datalist id="complainOptions">
                         <option value="Away Kapitbahay">
                         <option value="Ingay">
                         <option value="Utang">
-                        <option value="Physical Injury">
                         <option value="Pagnanakaw / Theft">
+                        <option value="Physical Injury">
                         <option value="Boundary Dispute">
                         <option value="Others">
                     </datalist>
                 </div>
+            </div>
+
+            <div class="row g-3 mb-3">
                 <div class="col-md-6">
                     <label class="form-label fw-semibold text-muted">Incident Date</label>
                     <input type="date" name="incidentDate" th:value="${b.incidentDate}" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold text-muted">Scheduled Hearing Date</label>
+                    <input type="date" name="hearingDate" th:value="${b.hearingDate}" class="form-control">
                 </div>
             </div>
 
@@ -84,7 +98,7 @@
             </div>
 
             <div class="row g-3 mb-4">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label fw-semibold text-muted">Status</label>
                     <select name="status" class="form-select">
                         <option value="Pending" th:selected="${b.status == 'Pending'}">Pending</option>
@@ -93,11 +107,7 @@
                         <option value="Dismissed" th:selected="${b.status == 'Dismissed'}">Dismissed</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-semibold text-muted">Scheduled Hearing Date</label>
-                    <input type="date" name="hearingDate" th:value="${b.hearingDate}" class="form-control">
-                </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label class="form-label fw-semibold text-muted">Resolution Notes</label>
                     <input type="text" name="resolution" th:value="${b.resolution}" class="form-control" placeholder="Resolution / Agreement">
                 </div>
