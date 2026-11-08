@@ -105,7 +105,6 @@ public class MainController {
     return "redirect:/residents";
   }
 
-  // WIRED: Pulls all documents & blotters linked by ID or Name
   @GetMapping("/residents/view/{id}") public String viewResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r == null) return "redirect:/residents";
@@ -158,12 +157,21 @@ public class MainController {
 
   @PostMapping("/documents/add") public String addDoc(
       @RequestParam Long residentId,
+      @RequestParam(required=false) String contact,
       @RequestParam String docType,
       @RequestParam(required=false) String purpose,
       @RequestParam(required=false) String validUntil){
     Document d = new Document();
     d.setResidentId(residentId);
-    residentRepo.findById(residentId).ifPresent(r -> d.setRequester(r.getFullname()));
+    residentRepo.findById(residentId).ifPresent(r -> {
+      d.setRequester(r.getFullname());
+      if (contact == null || contact.isBlank()) {
+        d.setContact(r.getContact());
+      }
+    });
+    if (contact != null && !contact.isBlank()) {
+      d.setContact(contact);
+    }
     d.setDocType(docType);
     d.setPurpose(purpose);
     d.setValidUntil(validUntil);
@@ -193,11 +201,12 @@ public class MainController {
     return "document-edit";
   }
 
-  @PostMapping("/documents/update/{id}") public String updateDoc(@PathVariable Long id, @RequestParam(required=false) String requester, @RequestParam String docType, @RequestParam(required=false) String purpose, @RequestParam(required=false) String status,
+  @PostMapping("/documents/update/{id}") public String updateDoc(@PathVariable Long id, @RequestParam(required=false) String requester, @RequestParam(required=false) String contact, @RequestParam String docType, @RequestParam(required=false) String purpose, @RequestParam(required=false) String status,
       @RequestParam(required=false) String validUntil){
     Document d = docRepo.findById(id).orElse(null);
     if(d != null){
       if(requester != null && !requester.isBlank()) d.setRequester(requester);
+      if(contact != null) d.setContact(contact);
       d.setDocType(docType); d.setPurpose(purpose); d.setStatus(status);
       d.setValidUntil(validUntil);
       docRepo.save(d);
@@ -245,6 +254,7 @@ public class MainController {
 
   @PostMapping("/blotter/add") public String addBlotter(
       @RequestParam Long complainantId,
+      @RequestParam(required=false) String contact,
       @RequestParam String respondentName,
       @RequestParam String incidentType,
       @RequestParam(required=false) String details,
@@ -254,14 +264,22 @@ public class MainController {
       @RequestParam(required=false) String hearingDate){
     Blotter b = new Blotter();
     b.setComplainantId(complainantId);
-    residentRepo.findById(complainantId).ifPresent(r -> b.setComplainant(r.getFullname()));
+    residentRepo.findById(complainantId).ifPresent(r -> {
+      b.setComplainant(r.getFullname());
+      if (contact == null || contact.isBlank()) {
+        b.setContact(r.getContact());
+      }
+    });
+    if (contact != null && !contact.isBlank()) {
+      b.setContact(contact);
+    }
     b.setRespondentName(respondentName);
     b.setIncidentType(incidentType);
     b.setDetails(details);
     b.setIncidentDate(incidentDate);
     b.setIncidentPlace(incidentPlace);
     b.setWitnesses(witnesses);
-    b.setHearingDate(hearingDate); // Saves hearing date if set upon filing
+    b.setHearingDate(hearingDate);
     b.setDateFiled(LocalDate.now().toString());
     b.setStatus("Pending");
     blotterRepo.save(b);
@@ -291,6 +309,7 @@ public class MainController {
   @PostMapping("/blotter/update/{id}") public String updateBlotter(
       @PathVariable Long id, 
       @RequestParam(required=false) String complainant, 
+      @RequestParam(required=false) String contact,
       @RequestParam String respondentName, 
       @RequestParam String incidentType, 
       @RequestParam(required=false) String details,
@@ -303,6 +322,7 @@ public class MainController {
     Blotter b = blotterRepo.findById(id).orElse(null);
     if(b != null){
       if(complainant != null && !complainant.isBlank()) b.setComplainant(complainant);
+      if(contact != null) b.setContact(contact);
       b.setRespondentName(respondentName); 
       b.setIncidentType(incidentType); 
       b.setDetails(details);
@@ -311,7 +331,7 @@ public class MainController {
       b.setWitnesses(witnesses);
       b.setResolution(resolution); 
       b.setStatus(status);
-      b.setHearingDate(hearingDate); // Properly saves/updates hearing date!
+      b.setHearingDate(hearingDate);
       blotterRepo.save(b);
     }
     return "redirect:/blotter";
