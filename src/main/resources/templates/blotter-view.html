@@ -16,14 +16,14 @@
 </head>
 <body class="bg-light">
 
-<!-- Navbar with Logout -->
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4 no-print">
     <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
     <div class="navbar-nav ms-auto">
         <a class="nav-link" href="/">Dashboard</a>
         <a class="nav-link" href="/residents">Residents</a>
         <a class="nav-link" href="/documents">Documents</a>
-        <a class="nav-link active" href="/blotter">Blotter</a>
+        <a class="nav-link active" href="/blotter">Barangay Blotter</a>
         <a class="nav-link text-warning" href="/logout">Logout</a>
     </div>
 </nav>
@@ -57,6 +57,10 @@
                 <tr>
                     <th class="table-light" style="width: 25%;">Complainant</th>
                     <td class="fw-bold fs-6 text-dark" th:text="${complainant}">Complainant</td>
+                </tr>
+                <tr>
+                    <th class="table-light">Complainant Contact</th>
+                    <td class="text-dark" th:text="${b.contact != null && !b.contact.isEmpty() ? b.contact : 'N/A'}">Contact</td>
                 </tr>
                 <tr>
                     <th class="table-light">Respondent</th>
