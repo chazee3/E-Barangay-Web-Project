@@ -1,12 +1,77 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>E-Barangay</title>
-<link rel="stylesheet" th:href="@{/css/style.css}"></head><body>
-<nav class="topbar"><b>E-Barangay</b><a href="/">Dashboard</a><a href="/residents">Residents</a><a href="/documents">Documents</a><a href="/blotter">Blotter</a><a href="/logout">Logout</a></nav>
-<div class="hero"><h1>E-Barangay System</h1><p>Resident profiling, document issuance, and blotter records in one place.</p></div>
-<div class="stats">
-<a class="stat" href="/residents"><span class="num" th:text="${residentCount}">0</span><span class="label">Residents</span></a>
-<a class="stat" href="/documents"><span class="num" th:text="${docCount}">0</span><span class="label">Documents</span></a>
-<a class="stat" href="/blotter"><span class="num" th:text="${blotterCount}">0</span><span class="label">Blotters</span></a>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard - E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-custom { background-color: #14532d; }
+        .hero-banner { background: linear-gradient(135deg, #14532d 0%, #15803d 100%); color: white; border-radius: 12px; padding: 35px 30px; margin-bottom: 30px; }
+        .stat-card { border-radius: 12px; transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; border: none; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .btn-custom { background-color: #15803d; color: white; font-weight: 500; }
+        .btn-custom:hover { background-color: #166534; color: white; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- Navbar with Logout -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-custom px-4">
+    <a class="navbar-brand fw-bold" href="/">E-Barangay</a>
+    <div class="navbar-nav ms-auto">
+        <a class="nav-link active" href="/">Dashboard</a>
+        <a class="nav-link" href="/residents">Residents</a>
+        <a class="nav-link" href="/documents">Documents</a>
+        <a class="nav-link" href="/blotter">Barangay Blotter</a>
+        <a class="nav-link text-warning" href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container my-4">
+    <!-- Hero Banner -->
+    <div class="hero-banner shadow-sm">
+        <h2 class="fw-bold mb-2">E-Barangay System</h2>
+        <p class="mb-0 text-white-50 fs-6">Resident profiling, document issuance, and barangay blotter records in one unified portal.</p>
+    </div>
+
+    <!-- Stats Summary Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Residents Card -->
+        <div class="col-md-4">
+            <a href="/residents" class="card stat-card shadow-sm p-4 text-center bg-white h-100">
+                <span class="display-4 fw-bold text-success mb-1" th:text="${residentCount}">0</span>
+                <span class="text-muted fw-semibold text-uppercase tracking-wider">Total Residents</span>
+            </a>
+        </div>
+
+        <!-- Documents Card -->
+        <div class="col-md-4">
+            <a href="/documents" class="card stat-card shadow-sm p-4 text-center bg-white h-100">
+                <span class="display-4 fw-bold text-primary mb-1" th:text="${docCount}">0</span>
+                <span class="text-muted fw-semibold text-uppercase tracking-wider">Issued Documents</span>
+            </a>
+        </div>
+
+        <!-- Barangay Blotter Card -->
+        <div class="col-md-4">
+            <a href="/blotter" class="card stat-card shadow-sm p-4 text-center bg-white h-100">
+                <span class="display-4 fw-bold text-danger mb-1" th:text="${blotterCount}">0</span>
+                <span class="text-muted fw-semibold text-uppercase tracking-wider">Barangay Blotter Cases</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h4 class="fw-bold text-dark mb-3">Quick Actions</h4>
+    <div class="card p-4 shadow-sm border-0 bg-white">
+        <div class="d-flex flex-wrap gap-3">
+            <a href="/residents" class="btn btn-custom px-4 py-2">Manage Residents</a>
+            <a href="/documents" class="btn btn-outline-success px-4 py-2">Issue a Document</a>
+            <a href="/blotter" class="btn btn-outline-danger px-4 py-2">File Barangay Blotter</a>
+        </div>
+    </div>
 </div>
-<h2>Quick actions</h2>
-<div class="actions"><a class="btn" href="/residents">Manage Residents</a><a class="btn" href="/documents">Issue a Document</a><a class="btn" href="/blotter">File a Blotter</a></div>
-</body></html>
+
+</body>
+</html>
