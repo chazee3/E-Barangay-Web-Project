@@ -28,15 +28,16 @@
 <div class="container my-4">
     <h3 class="fw-bold mb-4">Barangay Blotter Log</h3>
 
-    <!-- FILE BLOTTER FORM -->
+    <!-- FILE BLOTTER FORM (TEXTFIELD WITH INSTANT SEARCH) -->
     <div class="card p-3 mb-4 shadow-sm border-0">
         <form th:action="@{/blotter/add}" method="post">
             <div class="row g-2 mb-2">
+                <!-- Textfield with Datalist Autocomplete -->
                 <div class="col-md-3">
-                    <select name="complainantId" class="form-select" required>
-                        <option value="">Select Complainant (Resident) *</option>
-                        <option th:each="res : ${residents}" th:value="${res.id}" th:text="${res.fullname} + ' (ID: ' + ${res.id} + ')'"></option>
-                    </select>
+                    <input list="complainantList" type="text" name="complainant" class="form-control" placeholder="Complainant Name *" required autocomplete="off">
+                    <datalist id="complainantList">
+                        <option th:each="res : ${residents}" th:value="${res.fullname}"></option>
+                    </datalist>
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="contact" class="form-control" placeholder="Contact No. (optional)">
