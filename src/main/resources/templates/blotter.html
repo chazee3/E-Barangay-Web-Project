@@ -28,11 +28,10 @@
 <div class="container my-4">
     <h3 class="fw-bold mb-4">Barangay Blotter Log</h3>
 
-    <!-- FILE BLOTTER FORM (TEXTFIELD WITH INSTANT SEARCH) -->
+    <!-- FILE BLOTTER FORM -->
     <div class="card p-3 mb-4 shadow-sm border-0">
         <form th:action="@{/blotter/add}" method="post">
             <div class="row g-2 mb-2">
-                <!-- Textfield with Datalist Autocomplete -->
                 <div class="col-md-3">
                     <input list="complainantList" type="text" name="complainant" class="form-control" placeholder="Complainant Name *" required autocomplete="off">
                     <datalist id="complainantList">
@@ -60,11 +59,18 @@
             </div>
 
             <div class="row g-2 mb-2">
+                <!-- CLEARLY LABELED DATES (No more mystery mm/dd/yyyy boxes) -->
                 <div class="col-md-3">
-                    <input type="date" name="incidentDate" class="form-control" placeholder="Incident Date">
+                    <div class="input-group">
+                        <span class="input-group-text small bg-white text-muted">Incident Date</span>
+                        <input type="date" name="incidentDate" class="form-control">
+                    </div>
                 </div>
                 <div class="col-md-3">
-                    <input type="date" name="hearingDate" class="form-control" placeholder="Hearing Date (optional)">
+                    <div class="input-group">
+                        <span class="input-group-text small bg-white text-muted">Hearing Date</span>
+                        <input type="date" name="hearingDate" class="form-control">
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <input type="text" name="incidentPlace" class="form-control" placeholder="Incident Place">
