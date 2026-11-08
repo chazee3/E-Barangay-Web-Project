@@ -87,25 +87,53 @@ public class MainController {
   @GetMapping("/residents/edit/{id}") public String editResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r == null) return "redirect:/residents";
-    m.addAttribute("r", r); return "resident-edit";
+    m.addAttribute("r", r); 
+    return "resident-edit";
   }
 
-  @PostMapping("/residents/update/{id}") public String updateResident(@PathVariable Long id, @RequestParam String fullname, @RequestParam(required=false) String address, @RequestParam(required=false) String contact, @RequestParam(required=false) String birthdate,
-      @RequestParam(required=false) String sex, @RequestParam(required=false) String civilStatus, @RequestParam(required=false) String occupation,
-      @RequestParam(required=false) String status, @RequestParam(required=false) String category,
+  // UPDATED: Now receives split name fields
+  @PostMapping("/residents/update/{id}") public String updateResident(
+      @PathVariable Long id, 
+      @RequestParam String firstName,
+      @RequestParam(required=false) String middleName,
+      @RequestParam String lastName,
+      @RequestParam(required=false) String extension,
+      @RequestParam(required=false) String address, 
+      @RequestParam(required=false) String contact, 
+      @RequestParam(required=false) String birthdate,
+      @RequestParam(required=false) String sex, 
+      @RequestParam(required=false) String civilStatus, 
+      @RequestParam(required=false) String occupation,
+      @RequestParam(required=false) String status, 
+      @RequestParam(required=false) String category,
       @RequestParam(required=false) String disabilityType){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r != null){
-      r.setFullname(fullname); r.setAddress(address); r.setContact(contact); r.setBirthdate(birthdate);
-      r.setSex(sex); r.setCivilStatus(civilStatus); r.setOccupation(occupation);
-      r.setStatus(status); r.setCategory(category);
+      r.setFirstName(firstName);
+      r.setMiddleName(middleName);
+      r.setLastName(lastName);
+      r.setExtension(extension);
+
+      StringBuilder fullNameBuilder = new StringBuilder(firstName.trim());
+      if (middleName != null && !middleName.isBlank()) fullNameBuilder.append(" ").append(middleName.trim());
+      fullNameBuilder.append(" ").append(lastName.trim());
+      if (extension != null && !extension.isBlank()) fullNameBuilder.append(" ").append(extension.trim());
+      r.setFullname(fullNameBuilder.toString());
+
+      r.setAddress(address); 
+      r.setContact(contact); 
+      r.setBirthdate(birthdate);
+      r.setSex(sex); 
+      r.setCivilStatus(civilStatus); 
+      r.setOccupation(occupation);
+      r.setStatus(status); 
+      r.setCategory(category);
       r.setDisabilityType(disabilityType);
       residentRepo.save(r);
     }
     return "redirect:/residents";
   }
 
-  // WIRED: Pulls records by both ID and Name match (case-insensitive)
   @GetMapping("/residents/view/{id}") public String viewResident(@PathVariable Long id, Model m){
     Resident r = residentRepo.findById(id).orElse(null);
     if(r == null) return "redirect:/residents";
@@ -156,7 +184,6 @@ public class MainController {
     return "documents";
   }
 
-  // ADD DOCUMENT: Accepts Requester as a textfield & auto-links to resident if exists
   @PostMapping("/documents/add") public String addDoc(
       @RequestParam String requester,
       @RequestParam(required=false) String contact,
@@ -167,7 +194,6 @@ public class MainController {
     String cleanRequester = requester.trim();
     d.setRequester(cleanRequester);
 
-    // If the typed name matches a registered resident, link their residentId
     residentRepo.findAll().stream()
         .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(cleanRequester))
         .findFirst()
@@ -207,10 +233,17 @@ public class MainController {
     String requesterName = d.getRequester() != null ? d.getRequester() :
         residentRepo.findById(d.getResidentId() != null ? d.getResidentId() : -1L).map(Resident::getFullname).orElse("Unknown");
     m.addAttribute("requesterName", requesterName);
+    m.addAttribute("residents", residentRepo.findAll()); // Provides datalist for edit
     return "document-edit";
   }
 
-  @PostMapping("/documents/update/{id}") public String updateDoc(@PathVariable Long id, @RequestParam(required=false) String requester, @RequestParam(required=false) String contact, @RequestParam String docType, @RequestParam(required=false) String purpose, @RequestParam(required=false) String status,
+  @PostMapping("/documents/update/{id}") public String updateDoc(
+      @PathVariable Long id, 
+      @RequestParam(required=false) String requester, 
+      @RequestParam(required=false) String contact, 
+      @RequestParam String docType, 
+      @RequestParam(required=false) String purpose, 
+      @RequestParam(required=false) String status,
       @RequestParam(required=false) String validUntil){
     Document d = docRepo.findById(id).orElse(null);
     if(d != null){
@@ -222,7 +255,9 @@ public class MainController {
             .ifPresent(r -> d.setResidentId(r.getId()));
       }
       if(contact != null) d.setContact(contact);
-      d.setDocType(docType); d.setPurpose(purpose); d.setStatus(status);
+      d.setDocType(docType); 
+      d.setPurpose(purpose); 
+      d.setStatus(status);
       d.setValidUntil(validUntil);
       docRepo.save(d);
     }
@@ -267,7 +302,6 @@ public class MainController {
     return "blotter";
   }
 
-  // ADD BLOTTER: Accepts Complainant as a textfield & auto-links to resident if exists
   @PostMapping("/blotter/add") public String addBlotter(
       @RequestParam String complainant,
       @RequestParam(required=false) String contact,
@@ -282,7 +316,6 @@ public class MainController {
     String cleanComplainant = complainant.trim();
     b.setComplainant(cleanComplainant);
 
-    // If the typed name matches a registered resident, link their complainantId
     residentRepo.findAll().stream()
         .filter(r -> r.getFullname() != null && r.getFullname().trim().equalsIgnoreCase(cleanComplainant))
         .findFirst()
@@ -326,13 +359,14 @@ public class MainController {
     String comp = b.getComplainant() != null ? b.getComplainant() :
         residentRepo.findById(b.getComplainantId() != null ? b.getComplainantId() : -1L).map(Resident::getFullname).orElse("Unknown");
     m.addAttribute("complainant", comp);
+    m.addAttribute("residents", residentRepo.findAll()); // Provides datalist for edit
     return "blotter-edit";
   }
 
   @PostMapping("/blotter/update/{id}") public String updateBlotter(
       @PathVariable Long id, 
       @RequestParam(required=false) String complainant, 
-      @RequestParam(required=false) String contact,
+      @RequestParam(required=false) String contact, 
       @RequestParam String respondentName, 
       @RequestParam String incidentType, 
       @RequestParam(required=false) String details,
