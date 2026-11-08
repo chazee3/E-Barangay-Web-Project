@@ -1,9 +1,72 @@
-<!DOCTYPE html><html xmlns:th="http://www.thymeleaf.org"><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Verify Document</title>
-<style>body{font-family:sans-serif;padding:20px;max-width:480px;margin:auto} .box{padding:20px;border-radius:12px} .ok{background:#d8f3dc} .bad{background:#f7c6c6} td{padding:4px 8px}</style>
-</head><body>
-<div th:if="${d == null}" class="box bad"><h2>Document not found</h2><p>This code does not match any record. The document may be fake.</p></div>
-<div th:if="${d != null and valid}" class="box ok"><h2>VALID DOCUMENT</h2>
-<table><tr><td>Control No.</td><td th:text="${d.controlNo}"></td></tr><tr><td>Issued to</td><td th:text="${holder}"></td></tr><tr><td>Type</td><td th:text="${d.docType}"></td></tr><tr><td>Date issued</td><td th:text="${d.dateIssued}"></td></tr><tr><td>Valid until</td><td th:text="${d.validUntil}"></td></tr></table></div>
-<div th:if="${d != null and !valid}" class="box bad"><h2>EXPIRED</h2>
-<table><tr><td>Control No.</td><td th:text="${d.controlNo}"></td></tr><tr><td>Issued to</td><td th:text="${holder}"></td></tr><tr><td>Type</td><td th:text="${d.docType}"></td></tr><tr><td>Valid until</td><td th:text="${d.validUntil}"></td></tr></table></div>
-</body></html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Verification | E-Barangay</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #eef2f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px 10px; }
+        .card-verify { max-width: 440px; margin: 30px auto; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border: none; overflow: hidden; background: #fff; }
+        .header-bg { background-color: #14532d; color: white; padding: 25px 20px; text-align: center; }
+        .badge-verified { background-color: #22c55e; color: white; font-size: 0.9rem; font-weight: 600; padding: 6px 16px; border-radius: 20px; display: inline-block; }
+        .label-col { width: 40%; color: #64748b; font-size: 0.9rem; font-weight: 500; }
+        .val-col { color: #1e293b; font-weight: 600; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+
+<div class="card card-verify" th:if="${d != null}">
+    <div class="header-bg">
+        <h3 class="fw-bold mb-1">E-Barangay</h3>
+        <p class="mb-0 text-white-50 small text-uppercase tracking-wider">Official Certificate Verification</p>
+    </div>
+    
+    <div class="card-body p-4">
+        <div class="text-center mb-4">
+            <span class="badge-verified" th:if="${valid}">✔ Authentic & Valid Document</span>
+            <span class="badge bg-danger text-white py-2 px-3" th:unless="${valid}">✖ Expired Document</span>
+        </div>
+
+        <table class="table table-sm table-borderless mb-0">
+            <tbody>
+                <tr>
+                    <td class="label-col py-2">Document ID:</td>
+                    <td class="val-col py-2 text-primary" th:text="'DOC-' + ${d.id}">DOC-1</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Document Type:</td>
+                    <td class="val-col py-2 text-success fw-bold" th:text="${d.docType}">Barangay Clearance</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Issued To:</td>
+                    <td class="val-col py-2 fs-6 text-dark" th:text="${holder}">Resident Name</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Purpose:</td>
+                    <td class="val-col py-2" th:text="${d.purpose != null && !d.purpose.isEmpty() ? d.purpose : 'General Requirement'}">Purpose</td>
+                </tr>
+                <tr>
+                    <td class="label-col py-2">Date Issued:</td>
+                    <td class="val-col py-2" th:text="${d.dateIssued}">2026-11-08</td>
+                </tr>
+                <tr th:if="${d.validUntil != null && !d.validUntil.isEmpty()}">
+                    <td class="label-col py-2">Valid Until:</td>
+                    <td class="val-col py-2" th:text="${d.validUntil}">Date</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="mt-4 pt-3 border-top text-center text-muted small">
+            This digital record confirms this document was officially issued and recorded in the Barangay registry.
+        </div>
+    </div>
+</div>
+
+<div class="card card-verify text-center p-5" th:if="${d == null}">
+    <h4 class="text-danger fw-bold">Document Not Found</h4>
+    <p class="text-muted mt-2">This QR code does not belong to any valid document in the system.</p>
+</div>
+
+</body>
+</html>
