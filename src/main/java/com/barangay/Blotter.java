@@ -9,11 +9,11 @@ public class Blotter {
   private Long id;
 
   private Long complainantId;
-  private String complainant; // Textfield for complainant
+  private String complainant;
+  private String contact; // Added contact
   private String respondentName;
-  private String incidentType; // Complain field
+  private String incidentType;
   private String details;
-  private String contactNum
   private String incidentDate;
   private String incidentPlace;
   private String witnesses;
@@ -34,6 +34,9 @@ public class Blotter {
   public String getComplainant() { return complainant; }
   public void setComplainant(String complainant) { this.complainant = complainant; }
 
+  public String getContact() { return contact; }
+  public void setContact(String contact) { this.contact = contact; }
+
   public String getRespondentName() { return respondentName; }
   public void setRespondentName(String respondentName) { this.respondentName = respondentName; }
 
@@ -43,9 +46,6 @@ public class Blotter {
   public String getDetails() { return details; }
   public void setDetails(String details) { this.details = details; }
 
-  public String getContactNum() { return contactNum;}
-  public void setContactNum(String contactNum) {this.contactNum = contactNum; }
-  
   public String getIncidentDate() { return incidentDate; }
   public void setIncidentDate(String incidentDate) { this.incidentDate = incidentDate; }
 
